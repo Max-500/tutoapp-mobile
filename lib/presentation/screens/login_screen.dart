@@ -31,31 +31,31 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: screenHeight*0.05,),
           
               SizedBox(
-                width: screenWidth * 0.75,
+                width: screenWidth * 0.7,
                 child: const TextFieldCustomized(text: 'Correo Electronico'),
               ),
           
               SizedBox(height: screenHeight*0.05,),
           
               SizedBox(
-                width: screenWidth * 0.75,
-                child: const TextFieldCustomized(text: 'Contraseña',),
+                width: screenWidth * 0.7,
+                child: const TextFieldCustomized(text: 'Contraseña', isPassword: true,),
               ),
           
               SizedBox(height: screenHeight*0.05,),
 
               SizedBox(
-                width: screenWidth * 0.75,
+                width: screenWidth * 0.7,
                 height: screenHeight * 0.075,
                 child: ElevatedButtonCustomized(
                   child: Text('Entrar', style: TextStyle(color: Colors.white, fontSize: fontSizeText) ,),
-                  onPressed: () => context.push('/register'),
+                  onPressed: () => context.push('/link-code'),
                 ),
               ),
 
               SizedBox(height: screenHeight*0.05,),
 
-              RichTextLink(onPressed: (){}, text1: '¿No tienes una cuenta? ', text2: 'Registrate Ahora', size: screenWidth * 0.04)
+              RichTextLink(onPressed: () => context.push('/register'), text1: '¿No tienes una cuenta? ', text2: 'Registrate Ahora', size: screenWidth * 0.04)
             ],
           ),
         ),

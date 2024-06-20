@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class TextFieldCustomized extends StatelessWidget {
   final String text;
+  final bool? isPassword;
 
-  const TextFieldCustomized({super.key, required this.text});
+  const TextFieldCustomized({super.key, required this.text, this.isPassword});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      obscureText: isPassword ?? false,
       textAlign: TextAlign.center,
       decoration: InputDecoration(
         hintText: text,
