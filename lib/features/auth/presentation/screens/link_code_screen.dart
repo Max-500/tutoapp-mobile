@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tuto_app/presentation/widgets.dart';
+import 'package:tuto_app/widgets.dart';
 
 class LinkCodeScreen extends StatelessWidget {
   const LinkCodeScreen({super.key});
