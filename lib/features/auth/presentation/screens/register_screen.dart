@@ -55,7 +55,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   void showCustomSnackBar(BuildContext context, String text) {
-    final SnackBar snackBar = SnackBar(content: Text(text), action: SnackBarAction(label: 'ok!', onPressed: (){}), duration: const Duration(seconds: 3),);
+    final SnackBar snackBar = SnackBar(content: Text(text), action: SnackBarAction(label: 'ok!', onPressed: (){}), duration: const Duration(seconds: 3), backgroundColor: Colors.red,);
     ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(snackBar);
   }
 

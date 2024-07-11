@@ -1,6 +1,7 @@
 import 'dart:convert';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:tuto_app/config/shared_preferences/shared_preferences_service.dart';
 
 abstract class UserRemoteDataSource  {
   Future<dynamic> register(Map<String, dynamic> userRegistrationData);
@@ -40,8 +41,14 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'email': email, 'password': password}),
     );
+    final responseJson = jsonDecode(response.body);
+    
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      await SharedPreferencesService.saveUser(responseJson['user']['user']['uuid'], responseJson['user']['user']['email'], responseJson['user']['user']['role']);
+      return responseJson['user']['user'];
+    } else if (response.statusCode == 401 || response.statusCode == 404){
+      final String message = responseJson['message'] == 'Invalid password' ? responseJson['message'] : 'The user does not exists.';
+      throw Exception(message);
     } else {
       throw Exception('Failed to login');
     }
