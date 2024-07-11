@@ -5,6 +5,7 @@ class SharedPreferencesService {
   static const String _userEmailKey = 'user_email';
   static const String _userRoleKey = 'user_role';
   static const String _isNewUserKey = 'is_new_user';
+  static const String _haveATutor = 'is_student_and_have_a_tutor?';
 
   static Future<void> saveUser(String uuid, String email, String role) async {
     final prefs = await SharedPreferences.getInstance();
@@ -29,5 +30,6 @@ class SharedPreferencesService {
     await prefs.remove(_userEmailKey);
     await prefs.remove(_userRoleKey);
     await prefs.remove(_isNewUserKey);
+    await prefs.remove(_haveATutor);
   }
 }

@@ -103,11 +103,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         try {
                           final response = await loginUser(email, password);
-                          print(response['role']);
-                          context.push('/link-code');
+                          if(response['role'] == 'student') {
+                              context.push('/link-code');
+                              return;
+                          }
+                          context.go('/home-tutor');
                         } catch (e) {
-                          // Handle login error
-                          print('Error logging in user: $e');
                           _showErrorSnackbar(e.toString().replaceFirst('Exception: ', ''));
                         }
                       }
