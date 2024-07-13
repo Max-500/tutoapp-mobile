@@ -25,6 +25,7 @@ class LinkCodeScreen extends StatelessWidget {
           SizedBox(height: screenHeight*0.025,),
 
           LabelCustomized(text: 'Bienvenido', color: Colors.black, fontSize: fontSizeSubtitle, weight: FontWeight.normal),
+          LabelCustomized(text: 'Funcionalidad Pronta!', color: Colors.black, fontSize: fontSizeText, weight: FontWeight.normal),
 
           SizedBox(height: screenHeight*0.025,),
 
