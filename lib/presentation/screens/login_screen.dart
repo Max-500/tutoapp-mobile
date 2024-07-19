@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tuto_app/features/auth/presentation/providers/user_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
+import 'package:tuto_app/presentation/providers/auth/user_provider.dart';
+import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
 import 'package:tuto_app/widgets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -105,10 +108,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         try {
                           final response = await loginUser(email, password);
                           if(response['role'] == 'student') {
+                              // ignore: use_build_context_synchronously
                               context.push('/link-code');
                               return;
                           }
-                          context.go('/home-tutor');
+                          final Map<String, dynamic> tutor = await SharedPreferencesServiceTutor.getUser();
+                          final getCode = ref.read(getCodeProvider);
+                          final code = await getCode(tutor['uuid']);
+                          await SharedPreferencesServiceTutor.saveCode(code);
+                          // ignore: use_build_context_synchronously
+                          context.go('/home-tutor/$code');
                         } catch (e) {
                           _showErrorSnackbar(e.toString().replaceFirst('Exception: ', ''));
                         }
