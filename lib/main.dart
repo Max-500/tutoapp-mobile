@@ -5,17 +5,23 @@ import 'package:tuto_app/config/shared_preferences/student/shared_preferences_se
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/screens.dart';
 import 'package:tuto_app/config/theme/app_theme.dart';
+import 'package:tuto_app/widgets.dart';
 
 Future<String> getInitialLocation() async {
   final tutorPrefs = await SharedPreferencesServiceTutor.getUser();
-
   if(tutorPrefs['uuid'] != null) {
     final code = tutorPrefs['code'];
     return '/home-tutor/$code';
   }
 
-  //final studentPrefs = await SharedPreferencesServiceStudent.getStudent();
+  final studentPrefs = await SharedPreferencesServiceStudent.getStudent();
+  if(studentPrefs['userUUID'] == null || studentPrefs['userUUID'] == 'user_uuid') {
+    return '/';
+  }
 
+  if(studentPrefs['generalData'] == null || studentPrefs['generalData'] == 'general_data') {
+    return '/general-data';
+  }
 
   return '/';
 }
@@ -43,6 +49,9 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/register', builder: (context, state) => const RegisterScreen(),),
         GoRoute(path: '/link-code', builder: (context, state) => const LinkCodeScreen(),),
         GoRoute(path: '/home-tutor/:code', builder: (context, state) => HomeScreenTutor(code: state.pathParameters['code']!,),),
+        GoRoute(path: '/general-data', builder: (context, state) => GeneralDataScreen(),),
+        GoRoute(path: '/type-learning', builder: (context, state) => const TypeLearningScreen(),),
+        GoRoute(path: '/home-student', builder: (context, state) => const HomeStudentScreen(),)
       ]
     );
 

@@ -33,11 +33,12 @@ class SharedPreferencesServiceStudent {
 
   static Future<Map<String, dynamic>> getStudent() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final uuid = prefs.getString(_userUUIDKey);
     final haveATutor = prefs.getString(_haveATutor);
-    final generalData = prefs.getString(_generalData);
-    final typeLearning = prefs.getString(_typeLearning);
+    final generalData = prefs.getBool(_generalData);
+    final typeLearning = prefs.getBool(_typeLearning);
     final userUUIDTutor = prefs.getString(_userUUIDTutor);
-    return { 'userUUID': _userUUIDKey, 'haveATutor': haveATutor, 'generalData': generalData, 'typeLearning': typeLearning, 'userUUIDTutor': userUUIDTutor };
+    return { 'userUUID': uuid, 'haveATutor': haveATutor, 'generalData': generalData, 'typeLearning': typeLearning, 'userUUIDTutor': userUUIDTutor };
   }
 
   static Future<void> clearStudent() async {

@@ -28,6 +28,7 @@ class HomeScreenTutor extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(149, 99, 212, 1),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: const SideMenu(isTutor: true,),
       body: Center(

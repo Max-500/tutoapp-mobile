@@ -40,6 +40,28 @@ class LabeledContainer extends StatelessWidget {
             ),
           ),
         ),
+        Positioned(
+          top: -15.0,
+          right: -15.0,
+          child: Container(
+            width: 35.0,
+            height: 35.0,
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(149, 99, 212, 1),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                'PRO',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
       ]
     );
   }

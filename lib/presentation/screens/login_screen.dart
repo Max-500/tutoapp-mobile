@@ -1,7 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/presentation/providers/auth/user_provider.dart';
 import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
@@ -66,31 +68,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: screenHeight * 0.05),
                 SizedBox(
                   width: screenWidth * 0.7,
-                  child: TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Correo Electronico'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, ingrese su correo electrónico';
+                  child: TextFormFieldCustomized(controller: _emailController, hintText: 'Correo Electronico', validator: (value) {
+                    if (value == null || value.isEmpty) {
+                        return '*Por favor, ingrese su correo electronico*';
                       }
                       return null;
-                    },
-                  ),
+                  }, filled: true,
+                ),
                 ),
                 SizedBox(height: screenHeight * 0.05),
                 SizedBox(
                   width: screenWidth * 0.7,
-                  child: TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Contraseña'),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, ingrese su contraseña';
-                      }
-                      return null;
-                    },
-                  ),
+                  child: TextFormFieldCustomized(controller: _passwordController, hintText: 'Contraseña', validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '*Por favor, ingrese su contraseña*';
+                    }
+                    return null;
+                  }, filled: true, obscureText: true,),
                 ),
                 SizedBox(height: screenHeight * 0.05),
                 SizedBox(
@@ -107,16 +101,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         try {
                           final response = await loginUser(email, password);
-                          if(response['role'] == 'student') {
-                              // ignore: use_build_context_synchronously
-                              context.push('/link-code');
+                          if(response['user']['student'] != null) {
+                              await SharedPreferencesServiceStudent.saveStudent(response['user']['student']['userUUID'], response['user']['student']['haveTutor'], response['user']['generalDataBool'], response['user']['typeLearningBool']);
+                              if(!response['user']['generalDataBool']) {
+                                context.go('/general-data');
+                                return;
+                              }
+                              if(!response['user']['typeLearningBool']) {
+                                context.go('/type-learning');
+                                return;
+                              }
+                              if(!response['user']['student']['haveTutor']) {
+                                context.go('/link-code');
+                                return;
+                              }
+                              context.push('/home-student');
                               return;
                           }
-                          final Map<String, dynamic> tutor = await SharedPreferencesServiceTutor.getUser();
                           final getCode = ref.read(getCodeProvider);
-                          final code = await getCode(tutor['uuid']);
+                          final code = await getCode(response['user']['uuid']);
+                          await SharedPreferencesServiceTutor.saveUser(response['user']['uuid']);
                           await SharedPreferencesServiceTutor.saveCode(code);
-                          // ignore: use_build_context_synchronously
                           context.go('/home-tutor/$code');
                         } catch (e) {
                           _showErrorSnackbar(e.toString().replaceFirst('Exception: ', ''));

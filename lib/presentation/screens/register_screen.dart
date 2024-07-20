@@ -62,6 +62,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasNotch = MediaQuery.of(context).viewPadding.top > 35;
+
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -70,6 +72,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(30, hasNotch ? 10 : 20, 20, 10),
+                ),
                 LabelCustomized(
                   text: 'TutoApp',
                   color: const Color.fromRGBO(118, 10, 120, 1),
@@ -87,59 +92,44 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 SizedBox(height: screenHeight * 0.025),
                 SizedBox(
                   width: screenWidth * 0.7,
-                  child: TextFormField(
-                    controller: _firstnameController,
-                    decoration: const InputDecoration(labelText: 'Nombre'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, ingrese su nombre';
+                  child: TextFormFieldCustomized(controller: _firstnameController, hintText: 'Nombre', validator: (value) {
+                    if (value == null || value.isEmpty) {
+                        return '*Por favor, ingrese su nombre*';
                       }
                       return null;
-                    },
-                  ),
+                  }, filled: true,
+                )),
+                SizedBox(height: screenHeight * 0.025),
+                SizedBox(
+                  width: screenWidth * 0.7,
+                  child: TextFormFieldCustomized(controller: _lastnameController, hintText: 'Apellido', validator: (value) {
+                    if (value == null || value.isEmpty) {
+                        return '*Por favor, ingrese su apellido*';
+                      }
+                      return null;
+                  }, filled: true,
+                ),
                 ),
                 SizedBox(height: screenHeight * 0.025),
                 SizedBox(
                   width: screenWidth * 0.7,
-                  child: TextFormField(
-                    controller: _lastnameController,
-                    decoration: const InputDecoration(labelText: 'Apellido'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, ingrese su apellido';
+                  child: TextFormFieldCustomized(controller: _emailController, hintText: 'Correo Electronico', validator: (value) {
+                    if (value == null || value.isEmpty) {
+                        return '*Por favor, ingrese su correo electronico*';
                       }
                       return null;
-                    },
-                  ),
+                  }, filled: true,
+                ),
                 ),
                 SizedBox(height: screenHeight * 0.025),
                 SizedBox(
                   width: screenWidth * 0.7,
-                  child: TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Correo Electronico'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, ingrese su correo electrónico';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.025),
-                SizedBox(
-                  width: screenWidth * 0.7,
-                  child: TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Contraseña'),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, ingrese su contraseña';
-                      }
-                      return null;
-                    },
-                  ),
+                  child: TextFormFieldCustomized(controller: _passwordController, hintText: 'Contraseña', validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '*Por favor, ingrese su contraseña*';
+                    }
+                    return null;
+                  }, filled: true, obscureText: true,),
                 ),
                 SizedBox(height: screenHeight * 0.025),
                 DropdownButton<String>(
