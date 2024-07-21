@@ -9,19 +9,20 @@ import 'package:tuto_app/widgets.dart';
 
 Future<String> getInitialLocation() async {
   final tutorPrefs = await SharedPreferencesServiceTutor.getUser();
-  if(tutorPrefs['uuid'] != null) {
+  final studentPrefs = await SharedPreferencesServiceStudent.getStudent();
+
+  if(tutorPrefs['uuid'] != null && tutorPrefs['uuid'] != 'user_uuid') {
     final code = tutorPrefs['code'];
     return '/home-tutor/$code';
   }
 
-  final studentPrefs = await SharedPreferencesServiceStudent.getStudent();
-  if(studentPrefs['userUUID'] == null || studentPrefs['userUUID'] == 'user_uuid') {
-    return '/';
-  }
+  if(studentPrefs['userUUID'] == null || studentPrefs['userUUID'] == 'user_uuid') return '/';
 
-  if(studentPrefs['generalData'] == null || studentPrefs['generalData'] == 'general_data') {
-    return '/general-data';
-  }
+  if(studentPrefs['generalData'] == null || studentPrefs['generalData'] == 'general_data' || !studentPrefs['generalData']) return '/general-data';
+
+  if(studentPrefs['typeLearning'] == null || studentPrefs['typeLearning'] == 'type_learning' || !studentPrefs['typeLearning']) return '/welcome';
+
+  if(studentPrefs['haveATutor'] == null || studentPrefs['haveATutor'] == 'have_tutor' || !studentPrefs['haveATutor']) return '/link-code';
 
   return '/';
 }
@@ -50,8 +51,9 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/link-code', builder: (context, state) => const LinkCodeScreen(),),
         GoRoute(path: '/home-tutor/:code', builder: (context, state) => HomeScreenTutor(code: state.pathParameters['code']!,),),
         GoRoute(path: '/general-data', builder: (context, state) => GeneralDataScreen(),),
-        GoRoute(path: '/type-learning', builder: (context, state) => const TypeLearningScreen(),),
-        GoRoute(path: '/home-student', builder: (context, state) => const HomeStudentScreen(),)
+        GoRoute(path: '/type-learning/:page', builder: (context, state) => TypeLearningScreen(currentPage: int.tryParse(state.pathParameters['page'] ?? '1') ?? 1,),),
+        GoRoute(path: '/home-student', builder: (context, state) => const HomeStudentScreen(),),
+        GoRoute(path: '/welcome', builder: (context, state) => const WelcomeScreen(),)
       ]
     );
 

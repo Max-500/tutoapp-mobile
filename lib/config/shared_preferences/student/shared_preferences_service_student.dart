@@ -1,53 +1,58 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesServiceStudent {
-  static const String _userUUIDKey = 'user_uuid'; // String
-  static const String _haveATutor = 'have_tutor'; // bool
-  static const String _generalData = 'general_data'; // bool
-  static const String _typeLearning = 'type_learning'; // bool
-  static const String _userUUIDTutor = 'user_uuid_tutor'; // String
+  static const String _userUUIDKey = 'student_user_uuid'; // Cambiado
+  static const String _haveATutorKey = 'student_have_tutor'; // Cambiado
+  static const String _generalDataKey = 'student_general_data'; // Cambiado
+  static const String _typeLearningKey = 'student_type_learning'; // Cambiado
+  static const String _userUUIDTutorKey = 'student_user_uuid_tutor'; // Cambiado
 
   static Future<void> saveStudent(String userUUID, String haveATutor, bool generalData, bool typeLearning) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(_userUUIDKey, userUUID);
-    prefs.setString(_haveATutor, haveATutor);
-    prefs.setBool(_generalData, generalData);
-    prefs.setBool(_typeLearning , typeLearning);
+    await prefs.setString(_userUUIDKey, userUUID);
+    await prefs.setString(_haveATutorKey, haveATutor);
+    await prefs.setBool(_generalDataKey, generalData);
+    await prefs.setBool(_typeLearningKey, typeLearning);
   }
 
   static Future<void> vinculeTutor(bool haveATutor, String uuid) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_haveATutor, true);
-    prefs.setString(_userUUIDTutor, uuid);
+    await prefs.setBool(_haveATutorKey, haveATutor);
+    await prefs.setString(_userUUIDTutorKey, uuid);
   }
 
   static Future<void> setGeneralData(bool generalData) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_generalData, generalData);
+    await prefs.setBool(_generalDataKey, generalData);
   }
 
   static Future<void> setTypeLearning(bool typeLearning) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_typeLearning, typeLearning);
+    await prefs.setBool(_typeLearningKey, typeLearning);
   }
 
   static Future<Map<String, dynamic>> getStudent() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final uuid = prefs.getString(_userUUIDKey);
-    final haveATutor = prefs.getString(_haveATutor);
-    final generalData = prefs.getBool(_generalData);
-    final typeLearning = prefs.getBool(_typeLearning);
-    final userUUIDTutor = prefs.getString(_userUUIDTutor);
-    return { 'userUUID': uuid, 'haveATutor': haveATutor, 'generalData': generalData, 'typeLearning': typeLearning, 'userUUIDTutor': userUUIDTutor };
+    final haveATutor = prefs.getString(_haveATutorKey);
+    final generalData = prefs.getBool(_generalDataKey);
+    final typeLearning = prefs.getBool(_typeLearningKey);
+    final userUUIDTutor = prefs.getString(_userUUIDTutorKey);
+    return {
+      'userUUID': uuid,
+      'haveATutor': haveATutor,
+      'generalData': generalData,
+      'typeLearning': typeLearning,
+      'userUUIDTutor': userUUIDTutor
+    };
   }
 
   static Future<void> clearStudent() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userUUIDKey);
-    await prefs.remove(_haveATutor);
-    await prefs.remove(_generalData);
-    await prefs.remove(_typeLearning);
-    // Aqui se añadira el tutorUUID
+    await prefs.remove(_haveATutorKey);
+    await prefs.remove(_generalDataKey);
+    await prefs.remove(_typeLearningKey);
+    // Aquí se añadirá el tutorUUID
   }
-
 }

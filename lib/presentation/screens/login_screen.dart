@@ -30,8 +30,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _showErrorSnackbar(String message) {
-    final SnackBar snackBar = SnackBar(content: Text(message), action: SnackBarAction(label: 'ok!', onPressed: (){}), duration: const Duration(seconds: 3), backgroundColor: Colors.red,);
-    ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(snackBar);
+    final SnackBar snackBar = SnackBar(
+      content: Text(message),
+      action: SnackBarAction(label: 'ok!', onPressed: () {}),
+      duration: const Duration(seconds: 3),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(snackBar);
   }
 
   @override
@@ -52,7 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 LabelCustomized(
-                  text: 'TutoApp',
+                  text: 'Encuesta',
                   color: const Color.fromRGBO(118, 10, 120, 1),
                   fontSize: fontSizeTitle,
                   weight: FontWeight.bold,
@@ -68,23 +75,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 SizedBox(height: screenHeight * 0.05),
                 SizedBox(
                   width: screenWidth * 0.7,
-                  child: TextFormFieldCustomized(controller: _emailController, hintText: 'Correo Electronico', validator: (value) {
-                    if (value == null || value.isEmpty) {
+                  child: TextFormFieldCustomized(
+                    controller: _emailController,
+                    hintText: 'Correo Electronico',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
                         return '*Por favor, ingrese su correo electronico*';
                       }
                       return null;
-                  }, filled: true,
-                ),
+                    },
+                    filled: true,
+                  ),
                 ),
                 SizedBox(height: screenHeight * 0.05),
                 SizedBox(
                   width: screenWidth * 0.7,
-                  child: TextFormFieldCustomized(controller: _passwordController, hintText: 'Contraseña', validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '*Por favor, ingrese su contraseña*';
-                    }
-                    return null;
-                  }, filled: true, obscureText: true,),
+                  child: TextFormFieldCustomized(
+                    controller: _passwordController,
+                    hintText: 'Contraseña',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '*Por favor, ingrese su contraseña*';
+                      }
+                      return null;
+                    },
+                    filled: true,
+                    obscureText: true,
+                  ),
                 ),
                 SizedBox(height: screenHeight * 0.05),
                 SizedBox(
@@ -98,37 +115,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         final password = _passwordController.text;
 
                         final loginUser = ref.read(loginUserProvider);
-
                         try {
                           final response = await loginUser(email, password);
-                          if(response['user']['student'] != null) {
-                              await SharedPreferencesServiceStudent.saveStudent(response['user']['student']['userUUID'], response['user']['student']['haveTutor'], response['user']['generalDataBool'], response['user']['typeLearningBool']);
-                              if(!response['user']['generalDataBool']) {
-                                context.go('/general-data');
-                                return;
-                              }
-                              if(!response['user']['typeLearningBool']) {
-                                context.go('/type-learning');
-                                return;
-                              }
-                              if(!response['user']['student']['haveTutor']) {
-                                context.go('/link-code');
-                                return;
-                              }
-                              context.push('/home-student');
+                          if (response['user']['student'] != null) {
+                            await SharedPreferencesServiceStudent.saveStudent(
+                                response['user']['student']['userUUID'],
+                                response['user']['student']['haveTutor'],
+                                response['user']['generalDataBool'],
+                                response['user']['typeLearningBool']);
+                            if (!response['user']['generalDataBool']) {
+                              context.go('/general-data');
                               return;
+                            }
+                            if (!response['user']['typeLearningBool']) {
+                              context.go('/welcome');
+                              return;
+                            }
+                            if (!response['user']['student']['haveTutor']) {
+                              context.go('/link-code');
+                              return;
+                            }
+                            context.push('/home-student');
+                            return;
+                          } else {
+                            final getCode = ref.read(getCodeProvider);
+                            final code =
+                                await getCode(response['user']['uuid']);
+                            await SharedPreferencesServiceTutor.saveUser(
+                                response['user']['uuid']);
+                            await SharedPreferencesServiceTutor.saveCode(code);
+                            context.go('/home-tutor/$code');
                           }
-                          final getCode = ref.read(getCodeProvider);
-                          final code = await getCode(response['user']['uuid']);
-                          await SharedPreferencesServiceTutor.saveUser(response['user']['uuid']);
-                          await SharedPreferencesServiceTutor.saveCode(code);
-                          context.go('/home-tutor/$code');
                         } catch (e) {
-                          _showErrorSnackbar(e.toString().replaceFirst('Exception: ', ''));
+                          _showErrorSnackbar(
+                              e.toString().replaceFirst('Exception: ', ''));
                         }
                       }
                     },
-                    child: Text('Entrar', style: TextStyle(color: Colors.white, fontSize: fontSizeText) ,),
+                    child: Text(
+                      'Entrar',
+                      style: TextStyle(
+                          color: Colors.white, fontSize: fontSizeText),
+                    ),
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.05),

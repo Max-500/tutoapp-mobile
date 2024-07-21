@@ -216,7 +216,7 @@ class GeneralDataScreen extends ConsumerWidget {
                                   await saveDataGeneral(student['userUUID'], matriculaController.text, groupController.text, quarterController.text, phoneController.text, telephoneController.text, nssController.text);
                                   await SharedPreferencesServiceStudent.setGeneralData(true);
                                   if(!student['typeLearning']) {
-                                    context.go('/type-learning');
+                                    context.go('/welcome');
                                     return;
                                   }
 
