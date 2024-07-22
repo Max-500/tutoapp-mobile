@@ -1,13 +1,17 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/features/student/domain/entities/question.dart';
 import 'package:tuto_app/presentation/providers/student/question_provider.dart';
+import 'package:tuto_app/presentation/providers/student/student_provider.dart';
+
+import '../../widgets.dart';
 
 class TypeLearningScreen extends ConsumerStatefulWidget {
   final int currentPage;
-
   const TypeLearningScreen({super.key, required this.currentPage});
 
   @override
@@ -20,7 +24,6 @@ class _TypeLearningScreenState extends ConsumerState<TypeLearningScreen> {
   List<String> values = ['a', 'b', 'c'];
   late List<Question> questions;
   late List<String?> selectOptions;
-  late List<bool> isExpanded;
 
   @override
   void initState() {
@@ -39,25 +42,46 @@ class _TypeLearningScreenState extends ConsumerState<TypeLearningScreen> {
   Future<void> loadQuestions() async {
     final getQuestions = ref.read(getQuestionsProvider);
     questions = await getQuestions(widget.currentPage);
+    questions[0].isExpanded = true;
 
     final answers = ref.read(answersProvider.notifier).state;
     final int startIndex = (widget.currentPage - 1) * questionPerPage;
     final int endIndex = startIndex + questionPerPage;
+
+    // Ensure the answers list is large enough to hold all the answers
     if (answers.length < endIndex) {
       answers.addAll(List<String>.filled(endIndex - answers.length, ''));
     }
 
-    selectOptions = answers.sublist(startIndex, endIndex).map((e) => e == '' ? null : e).toList();
-
-    isExpanded = List<bool>.filled(questions.length, false);
-    isExpanded[0] = true;
+    // Map the answers for the current page to the selectOptions
+    selectOptions = answers
+        .sublist(startIndex, endIndex)
+        .map((e) => e == '' ? null : e)
+        .toList();
 
     setState(() {
       isLoading = false;
     });
   }
 
-  void handleSubmit() {
+  List<int> findNullIndices(List<dynamic> list) {
+    List<int> nullIndices = [];
+    for (int i = 0; i < list.length; i++) {
+      if (list[i] == null) {
+        nullIndices.add(i);
+      }
+    }
+    return nullIndices;
+  }
+
+  void handleSubmit() async {
+    List<int> nullPositions = findNullIndices(selectOptions);
+    if (selectOptions.contains(null)) {
+      showMissingAnswersDialog(
+          context, nullPositions, widget.currentPage, questionPerPage);
+      return;
+    }
+
     final int startIndex = (widget.currentPage - 1) * questionPerPage;
     final currentAnswers = ref.read(answersProvider.notifier).state;
 
@@ -68,19 +92,36 @@ class _TypeLearningScreenState extends ConsumerState<TypeLearningScreen> {
     ref.read(answersProvider.notifier).state = currentAnswers;
 
     if (widget.currentPage < 5) {
-      context.go('/type-learning/${widget.currentPage + 1}');
-    } else {
-      // Llamar a la API con las respuestas
+      context.push('/type-learning/${widget.currentPage + 1}');
+      return;
+    }
+    List<String> nonNullableAnswers = ref
+        .read(answersProvider.notifier)
+        .state
+        .where((element) => element != null)
+        .cast<String>()
+        .toList();
+
+    final saveTypeLearning = ref.read(saveTypeLearningProvider);
+    try {
+      await saveTypeLearning(nonNullableAnswers);
+      context.go('/acknowledgment');
+    } on Exception catch (e) {
+      showErrorSnackbar(e.toString().replaceFirst('Exception: ', ''), context);
     }
   }
 
-  void updateExpansion() {
-    for (int j = 0; j < questions.length; j++) {
-      questions[j].isExpanded = false;
-    }
-    setState(() {});
+  void updateExpansion(int index, bool expanded) {
+    setState(() {
+      if (expanded) {
+        for (int i = 0; i < questions.length; i++) {
+          questions[i].isExpanded = i == index;
+        }
+      } else {
+        questions[index].isExpanded = false;
+      }
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,53 +146,65 @@ class _TypeLearningScreenState extends ConsumerState<TypeLearningScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              for (int index = 0; index < questions.length; index++)
-                ExpansionTile(
-                  key: PageStorageKey<int>(index),
-                  initiallyExpanded: isExpanded[index],
-                  title: Text(questions[index].question),
-                  children: <Widget>[
-                    for (int i = 0; i < questions[index].options.length; i++)
-                      RadioListTile(
-                        value: values[i],
-                        groupValue: selectOptions[index],
-                        title: Text(questions[index].options[i]),
-                        onChanged: (value) {
-                          setState(() {
-                            selectOptions[index] = value;
-                          });
-                        },
-                      ),
-                  ],
-                  onExpansionChanged: (bool expanded) {
-                    updateExpansion();
-                    questions[index].isExpanded = expanded;
-                  },
-                ),
-              SizedBox(height: screenHeight * 0.05,),
-              SizedBox(
-                width: screenWidth * 0.3,
-                child: ElevatedButton.icon(
-                  onPressed: handleSubmit,
-                  icon: const Icon(Icons.arrow_forward_outlined, color: Colors.white),
-                  label: Container(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(118, 10, 120, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: const EdgeInsets.all(16),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: questions.length,
+              itemBuilder: (_, index) {
+                final globalIndex =
+                    ((widget.currentPage - 1) * questionPerPage) + index;
+                return AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: ExpansionTile(
+                    initiallyExpanded: questions[index].isExpanded,
+                    key: UniqueKey(),
+                    title: Text(
+                        '${globalIndex + 1}.- ${questions[index].question}'),
+                    children: [
+                      for (int i = 0; i < questions[index].options.length; i++)
+                        RadioListTile(
+                          value: values[i],
+                          groupValue: selectOptions[index],
+                          title: Text(questions[index].options[i]),
+                          onChanged: (value) {
+                            setState(() {
+                              selectOptions[index] = value;
+                              ref
+                                  .read(answersProvider.notifier)
+                                  .state[globalIndex] = value!;
+                            });
+                          },
+                        ),
+                    ],
+                    onExpansionChanged: (value) {
+                      updateExpansion(index, value);
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 25),
+            child: SizedBox(
+              height: screenHeight * 0.06,
+              width: screenWidth * 0.3,
+              child: ElevatedButton(
+                onPressed: handleSubmit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(118, 10, 120, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-              )
-            ],
-          ),
-        ),
+                child: const Icon(Icons.arrow_forward_outlined,
+                    color: Colors.white),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

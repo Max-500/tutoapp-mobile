@@ -12,9 +12,8 @@ class StudentRepositoryImpl implements StudentRepository {
   }
 
   @override
-  Future<void> saveTypeLearning(String userUUID, List<String> typeLearning) {
-    // TODO: implement saveTypeLearning
-    throw UnimplementedError();
+  Future<void> saveTypeLearning(String userUUID, List<String> typeLearning) async {
+    await remoteDataSource.saveTypeLearning(userUUID, typeLearning);
   }
 
   @override

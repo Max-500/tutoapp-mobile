@@ -1,3 +1,4 @@
+export 'package:tuto_app/presentation/widgets/alerts.dart';
 export 'package:tuto_app/presentation/widgets/elevated_button_customized.dart';
 export 'package:tuto_app/presentation/screens/home_student_screen.dart';
 export 'package:tuto_app/presentation/widgets/icon.dart';

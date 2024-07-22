@@ -22,7 +22,7 @@ Future<String> getInitialLocation() async {
 
   if(studentPrefs['typeLearning'] == null || studentPrefs['typeLearning'] == 'type_learning' || !studentPrefs['typeLearning']) return '/welcome';
 
-  if(studentPrefs['haveATutor'] == null || studentPrefs['haveATutor'] == 'have_tutor' || !studentPrefs['haveATutor']) return '/link-code';
+  if(studentPrefs['haveATutor'] == null || studentPrefs['haveATutor'] == 'have_tutor' || studentPrefs['haveATutor'] == 'PENDING') return '/link-code';
 
   return '/';
 }
@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/general-data', builder: (context, state) => GeneralDataScreen(),),
         GoRoute(path: '/type-learning/:page', builder: (context, state) => TypeLearningScreen(currentPage: int.tryParse(state.pathParameters['page'] ?? '1') ?? 1,),),
         GoRoute(path: '/home-student', builder: (context, state) => const HomeStudentScreen(),),
+        GoRoute(path: '/acknowledgment', builder: (context, state) => const Ackowledgment(),),
         GoRoute(path: '/welcome', builder: (context, state) => const WelcomeScreen(),)
       ]
     );

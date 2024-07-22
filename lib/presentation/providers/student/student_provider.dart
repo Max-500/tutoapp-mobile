@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:tuto_app/features/student/data/datasources/student_remote_data_source_impl.dart';
 import 'package:tuto_app/features/student/data/repositories/student_repository_impl.dart';
 import 'package:tuto_app/features/student/domain/usecases/save_data_general.dart';
+import 'package:tuto_app/features/student/domain/usecases/save_type_learning.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) {
   return http.Client();
@@ -21,4 +22,9 @@ final studentRepositoryProvider = Provider<StudentRepositoryImpl>((ref) {
 final saveDataGeneralProvider = Provider<SaveDataGeneral>((ref) {
   final repository = ref.watch(studentRepositoryProvider);
   return SaveDataGeneral(repository: repository);
+});
+
+final saveTypeLearningProvider = Provider<SaveTypeLearning>((ref) {
+  final repository = ref.watch(studentRepositoryProvider);
+  return SaveTypeLearning(repository: repository);
 });
