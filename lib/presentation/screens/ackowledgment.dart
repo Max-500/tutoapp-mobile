@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
@@ -46,7 +48,6 @@ class Ackowledgment extends StatelessWidget {
                           await SharedPreferencesServiceStudent.getStudent();
                       if (studentPrefs['haveATutor'] == null ||
                           studentPrefs['haveATutor'] == 'PENDING') {
-                        // ignore: use_build_context_synchronously
                         context.go('/link-code');
                         return;
                       }

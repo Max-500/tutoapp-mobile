@@ -38,12 +38,6 @@ class StudentRemoteDataSourceImpl implements StudentDataSource {
   
   @override
   Future<void> saveTypeLearning(String userUUID, List<String> typeLearning) async {
-    print(jsonEncode({ 
-        'studentUUID': userUUID,
-        'responses': typeLearning
-      }));
-    print(userUUID);
-    print(typeLearning);
     const String url = 'https://devsolutions.software/api/v1/students/learning-style-responses';
     final response = await client.post(
       Uri.parse(url), 
@@ -62,9 +56,24 @@ class StudentRemoteDataSourceImpl implements StudentDataSource {
   }
   
   @override
-  Future vinculeTutor(String userUUID, String code) {
-    // TODO: implement vinculeTutor
-    throw UnimplementedError();
+  Future<String> vinculeTutor(String userUUID, String code) async {
+    const String url = 'https://devsolutions.software/api/v1/students/verify-tutor-code/';
+    final response = await client.post(
+      Uri.parse(url), 
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({ 
+        'userUUID': userUUID,
+        'tutorCode': code
+      })
+    );
+    print(response.statusCode);
+    if(response.statusCode == 400 || response.statusCode == 404 || response.statusCode == 500) throw 'Error, ingresa un código existente';
+
+    final responseJson = jsonDecode(response.body);
+
+    await SharedPreferencesServiceStudent.vinculeTutor(responseJson['haveTutor']);
+
+    return responseJson['haveTutor'];
   }
 
 }

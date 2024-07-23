@@ -1,9 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/features/student/domain/entities/question.dart';
 import 'package:tuto_app/presentation/providers/student/question_provider.dart';
 import 'package:tuto_app/presentation/providers/student/student_provider.dart';

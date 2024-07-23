@@ -17,9 +17,8 @@ class StudentRepositoryImpl implements StudentRepository {
   }
 
   @override
-  Future vinculeTutor(String userUUID, String code) {
-    // TODO: implement vinculeTutor
-    throw UnimplementedError();
+  Future<String> vinculeTutor(String userUUID, String code) async {
+    return await remoteDataSource.vinculeTutor(userUUID, code);
   }
 
 }

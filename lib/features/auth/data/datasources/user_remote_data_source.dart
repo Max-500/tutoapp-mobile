@@ -21,7 +21,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     );
 
     final responseJson = jsonDecode(response.body);
-
+    print(responseJson);
     if (response.statusCode == 201) {
       return json.decode(response.body);
     } else if(response.statusCode == 409){
@@ -35,13 +35,14 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<dynamic> login(String email, String password) async {
+    print(email);
     final response = await client.post(
       Uri.parse('https://devsolutions.software/api/v1/auth/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'email': email, 'password': password}),
     );
     final responseJson = jsonDecode(response.body);
-    
+    print(responseJson);
     if (response.statusCode == 200) {
       return responseJson;
     } else if (response.statusCode == 401 || response.statusCode == 404){

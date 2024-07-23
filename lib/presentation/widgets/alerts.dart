@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void showMissingAnswersDialog(BuildContext context, List<int> nullPositions,
     int currentPage, int questionPerPage) {
@@ -101,4 +102,16 @@ void showErrorSnackbar(String message, BuildContext context) {
   ScaffoldMessenger.of(context)
     ..clearSnackBars()
     ..showSnackBar(snackBar);
+}
+
+void showToast(String text) {
+  Fluttertoast.showToast(
+    msg: text,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: Colors.red,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
 }

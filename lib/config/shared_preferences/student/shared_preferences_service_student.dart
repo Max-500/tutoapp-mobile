@@ -15,10 +15,9 @@ class SharedPreferencesServiceStudent {
     await prefs.setBool(_typeLearningKey, typeLearning);
   }
 
-  static Future<void> vinculeTutor(bool haveATutor, String uuid) async {
+  static Future<void> vinculeTutor(String haveATutor) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_haveATutorKey, haveATutor);
-    await prefs.setString(_userUUIDTutorKey, uuid);
+    await prefs.setString(_haveATutorKey, haveATutor);
   }
 
   static Future<void> setGeneralData(bool generalData) async {

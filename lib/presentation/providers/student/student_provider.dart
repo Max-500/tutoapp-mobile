@@ -4,6 +4,7 @@ import 'package:tuto_app/features/student/data/datasources/student_remote_data_s
 import 'package:tuto_app/features/student/data/repositories/student_repository_impl.dart';
 import 'package:tuto_app/features/student/domain/usecases/save_data_general.dart';
 import 'package:tuto_app/features/student/domain/usecases/save_type_learning.dart';
+import 'package:tuto_app/features/student/domain/usecases/vincule_tutor.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) {
   return http.Client();
@@ -27,4 +28,9 @@ final saveDataGeneralProvider = Provider<SaveDataGeneral>((ref) {
 final saveTypeLearningProvider = Provider<SaveTypeLearning>((ref) {
   final repository = ref.watch(studentRepositoryProvider);
   return SaveTypeLearning(repository: repository);
+});
+
+final vinculeTutorProvider = Provider<VinculeTutor>((ref) {
+  final repository = ref.watch(studentRepositoryProvider);
+  return VinculeTutor(repository: repository);
 });

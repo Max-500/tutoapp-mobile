@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
+import 'package:tuto_app/presentation/screens/home_screen_tutor.dart';
+import 'package:tuto_app/presentation/screens/home_student_screen.dart';
+import 'package:tuto_app/presentation/screens/type_learning_screen.dart';
 import 'package:tuto_app/screens.dart';
 import 'package:tuto_app/config/theme/app_theme.dart';
-import 'package:tuto_app/widgets.dart';
 
 Future<String> getInitialLocation() async {
   final tutorPrefs = await SharedPreferencesServiceTutor.getUser();
   final studentPrefs = await SharedPreferencesServiceStudent.getStudent();
-
+  
   if(tutorPrefs['uuid'] != null && tutorPrefs['uuid'] != 'user_uuid') {
     final code = tutorPrefs['code'];
     return '/home-tutor/$code';
@@ -27,10 +30,12 @@ Future<String> getInitialLocation() async {
   return '/';
 }
 
-
 void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     final initialLocation = await getInitialLocation();
+    Stripe.publishableKey = 'pk_test_51PfNmwRpjXAqyBlMs1vE20bKvXKbzhwvPn1jzAtN2HN6hN6SYOc7FcX1Xy1ZMmtzzaSCLD5Xos8YeJ3jdWlaJV2u00t2jqFiJH';
+    await Stripe.instance.applySettings();
+
     runApp(ProviderScope(child: MyApp(initialLocation: initialLocation,)));
 }
 
