@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
+import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/domain/datasources/tutor_data_source.dart';
 
 class TutorRemoteDataSourceImpl implements TutorDatasource {
@@ -51,7 +52,6 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
         style: ThemeMode.system,
         merchantDisplayName: "DevSolutions"
       ));
-      print(1);
       await Stripe.instance.presentPaymentSheet().then((value) {
         paymentIntentData = null;
       }).onError((error, stackTrace) {
@@ -62,20 +62,40 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
           ),);
         }
       });
-      print(2);
     } on StripeException catch (e) {
-            print("Entro en el catch 1 $e");
 
         if(kDebugMode) {
           print("Soy StripeException: $e");
         }
     } catch (e, s) {
-      print("Entro en el catch $e");
       if(kDebugMode) {
         print(s);
       }
     }
 
+  }
+
+  @override
+  Future<List<TutoredModel>> getTutoreds(String userUUID) async {
+    try {
+      const String url = "https://devsolutions.software/api/v1/tutors/get-tutoreds";
+
+      final response = await http.post(
+        Uri.parse(url),       
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({ 'userUUID': userUUID })
+      );
+ 
+      if(response.statusCode != 200) {
+        throw 'Contacta a soporte';
+      }
+      
+      final List<dynamic> responseJson = jsonDecode(response.body);
+
+      return responseJson.map((tutored) => TutoredModel.fromJson(tutored)).toList();
+    } catch (e) {
+      throw 'Contacta a soporte';
+    }
   }
 
 }

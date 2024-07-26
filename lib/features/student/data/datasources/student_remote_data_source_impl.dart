@@ -66,7 +66,6 @@ class StudentRemoteDataSourceImpl implements StudentDataSource {
         'tutorCode': code
       })
     );
-    print(response.statusCode);
     if(response.statusCode == 400 || response.statusCode == 404 || response.statusCode == 500) throw 'Error, ingresa un código existente';
 
     final responseJson = jsonDecode(response.body);

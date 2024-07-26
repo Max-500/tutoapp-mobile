@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tuto_app/features/tutor/data/datasources/tutor_remote_data_source.dart';
+import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/domain/repositories/tutor_repository.dart';
 
 class TutorRepositoryImpl implements TutorRepository{
@@ -15,6 +16,11 @@ class TutorRepositoryImpl implements TutorRepository{
   @override
   Future<void> getPremium(BuildContext context) async {
     await remoteDataSource.getPremium(context);
+  }
+
+  @override
+  Future<List<TutoredModel>> getTutoreds(String userUUID) async {
+    return remoteDataSource.getTutoreds(userUUID);
   }
 
 }

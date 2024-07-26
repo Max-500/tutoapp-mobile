@@ -5,6 +5,7 @@ import 'package:tuto_app/features/tutor/data/datasources/tutor_remote_data_sourc
 import 'package:tuto_app/features/tutor/data/repositories/tutor_repository_impl.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/get_code_tutor.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/get_premium.dart';
+import 'package:tuto_app/features/tutor/domain/usecases/get_tutoreds.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) {
   return http.Client();
@@ -28,4 +29,9 @@ final getCodeProvider = Provider<GetCodeTutor>((ref) {
 final getPremiumProvider = Provider<GetPremium>((ref) {
   final repository = ref.watch(tutorRepositoryProvider);
   return GetPremium(repository: repository);
+});
+
+final getTutoredsProvider = Provider<GetTutoreds>((ref) {
+  final repository = ref.watch(tutorRepositoryProvider);
+  return GetTutoreds(repository: repository);
 });

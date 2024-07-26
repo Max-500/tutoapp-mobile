@@ -1,18 +1,32 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
+import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
+import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
+import 'package:tuto_app/presentation/widgets/alerts.dart';
 
-class MenuItemWidget extends StatelessWidget {
+class MenuItemWidget extends ConsumerWidget {
   final IconData icon;
   final String title;
   final String url;
 
   const MenuItemWidget({ super.key, required this.icon, required this.title, required this.url });
 
+    Future<List<TutoredModel>> getTutoreds(WidgetRef ref) async {
+      try {
+        final getTutoreds = ref.read(getTutoredsProvider);
+        return await getTutoreds();
+      } catch (e){
+        showToast(e.toString());
+        return [];
+      }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ClipRRect(
@@ -27,7 +41,17 @@ class MenuItemWidget extends StatelessWidget {
                 context.go('/');
                 return;
               }
-              context.push(url);
+
+              if(url == '/list-tutoreds') {
+                final tutoreds = await getTutoreds(ref);
+                if (tutoreds.isEmpty) {
+                  context.go('/list-tutoreds', extra: []);
+                  return;
+                }
+                context.go('/list-tutoreds', extra: tutoreds);
+                return;
+              }
+              context.go(url);
             },
             splashColor: Colors.purple.withOpacity(0.3), // Color del efecto de ripple
             highlightColor: Colors.purple.withOpacity(0.4), // Color del highlight

@@ -1,7 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +29,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _showErrorSnackbar(String message) {
-    print(message);
     final SnackBar snackBar = SnackBar(
       content: Text(message),
       action: SnackBarAction(label: 'ok!', onPressed: () {}),
@@ -119,9 +115,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         final loginUser = ref.read(loginUserProvider);
                         try {
-                          print('entro');
                           final response = await loginUser(email, password);
-                          print(response);
                           if (response['user']['student'] != null) {
                             await SharedPreferencesServiceStudent.saveStudent(
                                 response['user']['student']['userUUID'],

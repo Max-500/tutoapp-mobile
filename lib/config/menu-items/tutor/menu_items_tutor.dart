@@ -9,6 +9,6 @@ class MenuItemsTutor {
 }
 
 const menuItemsTutor = <MenuItemsTutor> [
+  MenuItemsTutor(title: 'Tutorados', link: '/list-tutoreds', icon: Icons.people_outline ),
   MenuItemsTutor(title: 'Cerrar Sesión', link: '', icon: Icons.login_outlined),
-
 ];
