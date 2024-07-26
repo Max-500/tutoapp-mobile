@@ -6,13 +6,19 @@ class LabeledContainer extends StatelessWidget {
   final IconButton? iconButton;
   final bool? isPro;
   final VoidCallback? callback;
+  final double? sizeHeight;
+  final double? sizeWidth;
+  final FontWeight? weight;
 
   const LabeledContainer(
       {super.key,
       required this.text,
       this.iconButton,
       this.isPro,
-      this.callback});
+      this.callback,
+      this.sizeWidth,
+      this.sizeHeight,
+      this.weight});
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +37,12 @@ class LabeledContainer extends StatelessWidget {
           bottomLeft: Radius.circular(16.0),
           bottomRight: Radius.circular(16.0),
         ),
-        onTap: callback ?? () {},
+        onTap: callback,
         child: Container(
-          height: screenHeight * 0.08,
-          width: screenWidth * 0.75,
+          height: sizeHeight ?? screenHeight * 0.08,
+          width: sizeWidth ?? screenWidth * 0.7,
           decoration: const BoxDecoration(
-            color: Color.fromRGBO(0, 0, 0, 0.25),
+            color: Color.fromRGBO(217, 217, 217, 0.7),
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16.0),
               topRight: Radius.circular(16.0),
@@ -55,6 +61,7 @@ class LabeledContainer extends StatelessWidget {
                     style: TextStyle(
                       color: const Color.fromRGBO(111, 12, 113, 1),
                       fontSize: fontSizeText,
+                      fontWeight: weight
                     ),
                   ),
                 )),

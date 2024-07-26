@@ -65,6 +65,10 @@ class MyApp extends StatelessWidget {
           final tutoreds = state.extra as List<TutoredModel>? ?? [];
           return TutoredsListScreen(tutoreds: tutoreds);
         }),
+        GoRoute(path: '/tutored', builder: (context, state) {
+          final tutored = state.extra as TutoredModel;
+          return TutoredScreen(tutored: tutored,);
+        } ,)
       ],
     );
 

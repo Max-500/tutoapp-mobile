@@ -17,25 +17,23 @@ class TutoredsListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color.fromRGBO(149, 99, 212, 1),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Padding(
-          padding: EdgeInsets.only(right: screenWidth * 0.2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset('images/icono.svg', height: 30),
-              const SizedBox(width: 10),
-              const Text(
-                'Tutorados',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset('images/icono.svg', height: 30),
+            const SizedBox(width: 10),
+            const Text(
+              'Tutorados',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       body: Center(
@@ -101,7 +99,7 @@ class _ListTuroreds extends StatelessWidget {
               vertical: screenHeight * 0.01, horizontal: screenWidth * 0.05),
           height: screenHeight * 0.1,
           decoration: BoxDecoration(
-              color: const Color.fromRGBO(0, 0, 0, 0.25),
+              color: const Color.fromRGBO(217, 217, 217, 0.7),
               borderRadius: BorderRadius.circular(20)),
           child: InkWell(
             borderRadius: BorderRadius.circular(20),
