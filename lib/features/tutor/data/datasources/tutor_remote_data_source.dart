@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/domain/datasources/tutor_data_source.dart';
+import 'package:path/path.dart';
 
 class TutorRemoteDataSourceImpl implements TutorDatasource {
   final http.Client client;
@@ -128,6 +130,35 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
     if(response.statusCode == 204) return true;
 
     return false;
+  }
+  
+  @override
+  Future<String> updateSchedule(String userUUID, XFile file) async {
+    try {
+      final String url = "https://devsolutions.software/api/v1/tutors/updateScheduleImage/$userUUID";
+
+      final request = http.MultipartRequest('PUT', Uri.parse(url));
+
+      final stream = http.ByteStream(Stream.castFrom(file.openRead()));
+      var length = await file.length();
+
+      // Agrega el archivo al formulario
+      var multipartFile = http.MultipartFile('file', stream, length, filename: basename(file.path));
+      request.files.add(multipartFile);
+
+      final response = await request.send();
+
+      if(response.statusCode == 200) {
+        return "Se ha actualizado tu horario";
+      }
+
+      final responseJson = await http.Response.fromStream(response);
+      final parsedJson = json.decode(responseJson.body);
+      throw parsedJson["error"]["message"];
+
+    } catch (e) {
+      throw 'Error: ${e.toString()}';
+    }
   }
 
 }

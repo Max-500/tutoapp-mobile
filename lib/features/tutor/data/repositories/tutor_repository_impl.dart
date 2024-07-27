@@ -2,6 +2,7 @@ import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_serv
 import 'package:tuto_app/features/tutor/data/datasources/tutor_remote_data_source.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/domain/repositories/tutor_repository.dart';
+import 'package:image_picker/image_picker.dart';
 
 class TutorRepositoryImpl implements TutorRepository{
   final TutorRemoteDataSourceImpl remoteDataSource;
@@ -38,6 +39,11 @@ class TutorRepositoryImpl implements TutorRepository{
   Future<bool> isPremium() async {
     final tutor = await SharedPreferencesServiceTutor.getUser();
     return await remoteDataSource.isPremium(tutor['uuid']);
+  }
+
+  @override
+  Future<String> updateSchedule(String userUUID, XFile file) async {
+    return await remoteDataSource.updateSchedule(userUUID, file);
   }
 
 }

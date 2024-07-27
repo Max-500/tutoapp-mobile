@@ -8,6 +8,7 @@ import 'package:tuto_app/features/tutor/domain/usecases/get_order_payment.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/get_premium.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/get_tutoreds.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/is_premium.dart';
+import 'package:tuto_app/features/tutor/domain/usecases/update_schedule.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) {
   return http.Client();
@@ -56,4 +57,9 @@ final savePaymentProvider = Provider<GetPremium>((ref) {
 final isPremiumProvider = Provider<IsPremium>((ref) {
   final repository = ref.watch(tutorRepositoryProvider);
   return IsPremium(repository: repository);
+});
+
+final updateScheduleProvider = Provider<UpdateSchedule>((ref) {
+  final repository = ref.watch(tutorRepositoryProvider);
+  return UpdateSchedule(repository: repository);
 });

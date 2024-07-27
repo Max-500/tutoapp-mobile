@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
 import 'package:tuto_app/widgets.dart';
@@ -178,7 +179,7 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic tr
     final double fontSizeText = screenWidth * 0.07;
     final double responsiveIcon = screenWidth * 0.07;
 
-    print(isPremium);
+    XFile? file;
 
     return Scaffold(
       appBar: AppBar(
@@ -219,6 +220,20 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic tr
             LabeledContainer(
               text: 'Solicitudes de Permisos',
               callback: () {},
+            ),
+            SizedBox(height: screenHeight * 0.05),
+            LabeledContainer(
+              text: 'Actualizar Horario',
+              callback: () async {
+                file = await ImagePicker().pickImage(source: ImageSource.gallery);
+                if(file == null) return;
+                try {
+                  final updateSchedule = ref.read(updateScheduleProvider);
+                  showToastOk(await updateSchedule(file!));
+                } catch (e) {
+                  showToast(e.toString());
+                }
+              },
             ),
             SizedBox(height: screenHeight * 0.05),
             LabeledContainer(text: 'Estadisticos de aprendizaje', callback: () async {
