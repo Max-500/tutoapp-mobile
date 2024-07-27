@@ -1,40 +1,52 @@
 // ignore_for_file: constant_pattern_never_matches_value_type, use_build_context_synchronously
-
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
 import 'package:tuto_app/widgets.dart';
 
 class HomeScreenTutor extends ConsumerStatefulWidget {
   final String code;
- final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-  HomeScreenTutor({super.key, required this.code});
+  const HomeScreenTutor({super.key, required this.code});
 
   @override
   HomeScreenTutorState createState() => HomeScreenTutorState();
 }
 
 class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
+  late bool isPremium = false;
   bool _isProcessing = false;
 
-  Future<void> getPremium(BuildContext context) async {
+  
+
+  @override
+  void initState() {
+    super.initState();
+    isPremumInitializer();
+  }
+
+  Future<void> isPremumInitializer() async {
+    final isPremiumData = ref.read(isPremiumProvider);
+    isPremium = await isPremiumData();
+    setState(() {});
+  }
+
+  Future<void> becomePremium(BuildContext context) async {
     if (_isProcessing) return;
 
     setState(() {
       _isProcessing = true;
     });
 
+    final getOrder = ref.read(getOrderPaymentProvider);
+    final paymentIntentData = await getOrder();
+
     try {
-      final paymentIntentData = await _createPaymentIntent();
       if (paymentIntentData == null) {
         _showDialog(context, 'Error', 'No se pudo crear la intención de pago, intentalo mas tarde.');
         return;
@@ -43,35 +55,14 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
       await _initializePaymentSheet(paymentIntentData['client_secret']);
       await _presentPaymentSheet(context, paymentIntentData);
     } catch (e) {
+      final cancelOrder = ref.read(cancelOrderPaymentProvider);
+      await cancelOrder(paymentIntentData['id']!);
       _showDialog(context, 'Error', 'Error: $e');
+      
     } finally {
       setState(() {
         _isProcessing = false;
       });
-    }
-  }
-
-  Future<Map<String, dynamic>?> _createPaymentIntent() async {
-    Map<String, dynamic> body = {
-      'amount': "7000", // Stripe expects the amount in the smallest currency unit (e.g., cents)
-      'currency': 'MXN',
-      'payment_method_types[]': 'card'
-    };
-
-    final response = await http.post(
-      Uri.parse('https://api.stripe.com/v1/payment_intents'),
-      body: body,
-      headers: {
-        'Authorization': 'Bearer sk_test_51PfNmwRpjXAqyBlMWNBgRaawFybJXwXbsq32sBwfsEzToCnsskbDXTJABXeUcZaeakO56NdEEX6p4s8uTPDhIvPy00i7f1glDO',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-    );
-    print('Vengo de la api');
-    print(jsonDecode(response.body));
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      return null;
     }
   }
 
@@ -90,7 +81,7 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
     try {
     await Stripe.instance.presentPaymentSheet();
       final paymentIntent = await Stripe.instance.retrievePaymentIntent(paymentIntentData['client_secret']);
-      _handlePaymentIntentStatus(context, paymentIntent.status);
+      _handlePaymentIntentStatus(context, paymentIntent.status, paymentIntentData['id']);
     } catch (e, _) {
       _handlePaymentSheetError(context, e);
     }
@@ -110,7 +101,7 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
     }
   }
 
-void _handlePaymentIntentStatus(BuildContext context, dynamic status) {
+void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic transactionId) async {
   switch (status) {
     case PaymentIntentsStatus.RequiresPaymentMethod:
       _showDialog(context, 'Método de Pago Requerido', 'El método de pago es inválido o no ha sido proporcionado. Por favor, intente con otro método.');
@@ -128,7 +119,13 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status) {
       _showDialog(context, 'Cancelado', 'El pago ha sido cancelado.');
       break;
     case PaymentIntentsStatus.Succeeded:
-      _showDialog(context, 'Exitoso', 'El pago ha sido completado exitosamente.');
+      try {
+        final getPremium = ref.read(savePaymentProvider);
+        await getPremium(transactionId);
+        _showDialog(context, 'Exitoso', 'El pago ha sido completado exitosamente.');
+      } catch (e) {
+        _showSnackbar(context, e.toString());
+      }        
       break;
     default:
       _showDialog(context, 'Error', 'Estado de pago desconocido.');
@@ -160,28 +157,7 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status) {
       duration: const Duration(seconds: 3),
       backgroundColor: const Color.fromRGBO(111, 12, 113, 1),
     );
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(snackBar);
-  }
-
-    Future<void> refundPayment(String paymentIntentId) async {
-    final refundResponse = await http.post(
-      Uri.parse('https://api.stripe.com/v1/refunds'),
-      body: {
-        'payment_intent': paymentIntentId,
-      },
-      headers: {
-        'Authorization': 'Bearer sk_test_51PfNmwRpjXAqyBlMWNBgRaawFybJXwXbsq32sBwfsEzToCnsskbDXTJABXeUcZaeakO56NdEEX6p4s8uTPDhIvPy00i7f1glDO',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    );
-
-    if (refundResponse.statusCode == 200) {
-      print('Reembolso exitoso');
-    } else {
-      print('Error en el reembolso: ${refundResponse.body}');
-    }
+    ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(snackBar);
   }
 
   Future<List<TutoredModel>> getTutoreds() async {
@@ -194,7 +170,6 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status) {
       }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -203,29 +178,13 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status) {
     final double fontSizeText = screenWidth * 0.07;
     final double responsiveIcon = screenWidth * 0.07;
 
+    print(isPremium);
+
     return Scaffold(
       appBar: AppBar(
-        key: widget.scaffoldKey,
         backgroundColor: const Color.fromRGBO(149, 99, 212, 1),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Padding(
-          padding: EdgeInsets.only(right: screenWidth * 0.2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset('images/icono.svg', height: 30),
-              const SizedBox(width: 10),
-              const Text(
-                'Home',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
+        title: AppBarTutor(screenWidth: screenWidth),
       ),
       drawer: const SideMenu(isTutor: true),
       body: Center(
@@ -262,21 +221,56 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status) {
               callback: () {},
             ),
             SizedBox(height: screenHeight * 0.05),
-            LabeledContainer(
-              text: 'Estadisticos de aprendizaje',
-              callback: () {},
+            LabeledContainer(text: 'Estadisticos de aprendizaje', callback: () async {
+              if(!isPremium) {
+                  await becomePremium(context);
+                  return;
+              }
+            },
               isPro: true,
             ),
             SizedBox(height: screenHeight * 0.05),
-            LabeledContainer(
-              text: 'Chat',
-              callback: () async {
-                await getPremium(context);
+            LabeledContainer(text: 'Chat', callback: () async {
+                if(!isPremium) {
+                  await becomePremium(context);
+                  return;
+                }
               },
               isPro: true,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class AppBarTutor extends StatelessWidget {
+  const AppBarTutor({
+    super.key,
+    required this.screenWidth,
+  });
+
+  final double screenWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(right: screenWidth * 0.2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset('images/icono.svg', height: 30),
+          const SizedBox(width: 10),
+          const Text(
+            'Home',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

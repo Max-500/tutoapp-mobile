@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:tuto_app/features/tutor/domain/repositories/tutor_repository.dart';
 
 class GetPremium {
@@ -6,7 +5,7 @@ class GetPremium {
 
   GetPremium({required this.repository});
 
-  Future<void> call(BuildContext context) async {
-    await repository.getPremium(context);
+  Future<void> call(String transactionId) async {
+    await repository.getPremium(transactionId);
   }
 }

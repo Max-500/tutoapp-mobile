@@ -6,6 +6,7 @@ import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/widgets.dart';
 
 class TutoredsListScreen extends StatelessWidget {
+
   final List<TutoredModel> tutoreds;
 
   const TutoredsListScreen({super.key, required this.tutoreds});

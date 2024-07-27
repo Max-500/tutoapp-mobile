@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/features/tutor/data/datasources/tutor_remote_data_source.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/domain/repositories/tutor_repository.dart';
@@ -14,13 +14,30 @@ class TutorRepositoryImpl implements TutorRepository{
   }
   
   @override
-  Future<void> getPremium(BuildContext context) async {
-    await remoteDataSource.getPremium(context);
+  Future<void> getPremium(String transactionId) async {
+    final student = await SharedPreferencesServiceTutor.getUser();
+    await remoteDataSource.becomePremium(student['uuid'], transactionId);
   }
 
   @override
   Future<List<TutoredModel>> getTutoreds(String userUUID) async {
     return remoteDataSource.getTutoreds(userUUID);
+  }
+  
+  @override
+  Future cancelOrder(String transactionId) async {
+    await remoteDataSource.cancelOrder(transactionId);
+  }
+  
+  @override
+  Future getOrder() async {
+    return await remoteDataSource.getOrder();
+  }
+  
+  @override
+  Future<bool> isPremium() async {
+    final tutor = await SharedPreferencesServiceTutor.getUser();
+    return await remoteDataSource.isPremium(tutor['uuid']);
   }
 
 }

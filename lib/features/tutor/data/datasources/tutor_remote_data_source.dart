@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/domain/datasources/tutor_data_source.dart';
@@ -29,50 +26,40 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
   }
   
   @override
-  Future<void> getPremium(BuildContext context) async {
-    try {
-      Map<String, dynamic> body = {
-        'amount': "70",
-        'currency': 'MXN',
-        'payment_method_types_[]': 'card'
-      };
+  Future<void> becomePremium(String userUUID, String transactionId) async {
+    const String url = "https://devsolutions.software/api/v1/payments/";
 
-      final response = await http.post(Uri.parse('https://api.stripe.com/v1/payment_intents'), body: body,
-        headers: {
-          'Authorization': 'Bearer sk_test_51PfNmwRpjXAqyBlMWNBgRaawFybJXwXbsq32sBwfsEzToCnsskbDXTJABXeUcZaeakO56NdEEX6p4s8uTPDhIvPy00i7f1glDO',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+    try {
+      DateTime now = DateTime.now();
+      String isoDate = now.toIso8601String();
+
+      final response = await http.post(Uri.parse(url), 
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({ 
+          "userUUID": userUUID,
+          "amount": 70,
+          "currency": "MXN",
+          "paymentMethod": "card",
+          "transactionId": transactionId,
+          "date": isoDate
+         })
       );
 
-      var paymentIntentData = jsonDecode(response.body);
-      
-      await Stripe.instance.initPaymentSheet(paymentSheetParameters: SetupPaymentSheetParameters(
-        allowsDelayedPaymentMethods: true,
-        paymentIntentClientSecret: paymentIntentData!['client_secret'],
-        style: ThemeMode.system,
-        merchantDisplayName: "DevSolutions"
-      ));
-      await Stripe.instance.presentPaymentSheet().then((value) {
-        paymentIntentData = null;
-      }).onError((error, stackTrace) {
-        if(kDebugMode) {
-          print('Error: $error, $stackTrace');
-          showDialog(context: context, builder: (_) => const AlertDialog(
-            title: Text('Cancelled'),
-          ),);
-        }
-      });
-    } on StripeException catch (e) {
-
-        if(kDebugMode) {
-          print("Soy StripeException: $e");
-        }
-    } catch (e, s) {
-      if(kDebugMode) {
-        print(s);
+      if(response.statusCode == 422) {
+        throw 'Por favor intentalo mas tarde';
       }
-    }
 
+      if(response.statusCode == 400) {
+        throw 'Actualmente tienes una suscripción premium activa';
+      }
+
+      if(response.statusCode == 500) {
+        throw 'Algo sucedio mal y se hizo el rembolso del pago, por favor contacta a soporte';
+      }
+
+    } catch(e) {
+      throw e.toString();
+    }
   }
 
   @override
@@ -96,6 +83,51 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
     } catch (e) {
       throw 'Contacta a soporte';
     }
+  }
+  
+  @override
+  Future cancelOrder(String transactionId) async {
+    const String url = "https://devsolutions.software/api/v1/payments/cancel-order";
+    final response = await http.delete(Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({ 'transactionId': transactionId })
+    );
+
+    if(response.statusCode != 204) {
+      throw {
+        'Error al cancelar el pago, por favor contacta a soporte'
+      };
+    }
+  }
+  
+  @override
+  Future getOrder() async {
+    const String url ="https://devsolutions.software/api/v1/payments/create-order";
+    final response = await http.post(Uri.parse(url), 
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({ 
+        "amount": 7000,
+        "currency": "MXN"
+      })
+    );
+
+    if(response.statusCode != 200) {
+      throw 'Error al crear la orden de pago, intentalo mas tarde';
+    }
+    return jsonDecode(response.body);
+  }
+  
+  @override
+  Future<bool> isPremium(String userUUID) async {
+    const String url = "https://devsolutions.software/api/v1/payments/verify-premium";
+    final response = await http.post(Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({ 'userUUID': userUUID })
+    );
+
+    if(response.statusCode == 204) return true;
+
+    return false;
   }
 
 }

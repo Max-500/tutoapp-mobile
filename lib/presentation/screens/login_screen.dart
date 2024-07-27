@@ -35,9 +35,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       duration: const Duration(seconds: 3),
       backgroundColor: Colors.red,
     );
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(snackBar);
+    ScaffoldMessenger.of(context)..clearSnackBars()..showSnackBar(snackBar);
   }
 
   @override
@@ -143,6 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             await SharedPreferencesServiceTutor.saveUser(
                                 response['user']['uuid']);
                             await SharedPreferencesServiceTutor.saveCode(code);
+
                             context.go('/home-tutor/$code');
                           }
                         } catch (e) {
