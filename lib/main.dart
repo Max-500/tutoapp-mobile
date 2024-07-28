@@ -14,21 +14,22 @@ import 'package:tuto_app/config/theme/app_theme.dart';
 Future<String> getInitialLocation() async {
   final tutorPrefs = await SharedPreferencesServiceTutor.getUser();
   final studentPrefs = await SharedPreferencesServiceStudent.getStudent();
+  print(studentPrefs);
+  print(tutorPrefs);
+  if(tutorPrefs['uuid'] == null || studentPrefs['userUUID'] == null) return '/';
 
-  return '/home-student';
-
-  if (tutorPrefs['uuid'] != null && tutorPrefs['uuid'] != 'user_uuid') {
+  if (tutorPrefs['uuid'] != null && tutorPrefs['code'] != null) {
     final code = tutorPrefs['code'];
     return '/home-tutor/$code';
   }
 
-  if (studentPrefs['userUUID'] == null || studentPrefs['userUUID'] == 'user_uuid') return '/';
+  if (studentPrefs['generalData'] == null || !studentPrefs['generalData']) return '/general-data';
 
-  if (studentPrefs['generalData'] == null || studentPrefs['generalData'] == 'general_data' || !studentPrefs['generalData']) return '/general-data';
+  if (studentPrefs['typeLearning'] == null || !studentPrefs['typeLearning']) return '/welcome';
 
-  if (studentPrefs['typeLearning'] == null || studentPrefs['typeLearning'] == 'type_learning' || !studentPrefs['typeLearning']) return '/welcome';
+  if (studentPrefs['haveATutor'] == null && studentPrefs['haveATutor'] == 'PENDING') return '/link-code';
 
-  if (studentPrefs['haveATutor'] == null || studentPrefs['haveATutor'] == 'have_tutor' || studentPrefs['haveATutor'] == 'PENDING') return '/link-code';
+  if(studentPrefs['generalData'] && studentPrefs['typeLearning']  && studentPrefs['haveATutor'] != 'PENDING') return '/home-student';
 
   return '/';
 }
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/register', builder: (context, state) => const RegisterScreen()),
         GoRoute(path: '/link-code', builder: (context, state) => const LinkCodeScreen()),
         GoRoute(path: '/home-tutor/:code', builder: (context, state) => HomeScreenTutor(code: state.pathParameters['code']!)),
+        GoRoute(path: '/schedule/:schedule', builder: (context, state) => ScheduleScreen(url: state.pathParameters['schedule']!),),
         GoRoute(path: '/general-data', builder: (context, state) => GeneralDataScreen()),
         GoRoute(path: '/type-learning/:page', builder: (context, state) => TypeLearningScreen(currentPage: int.tryParse(state.pathParameters['page'] ?? '1') ?? 1)),
         GoRoute(path: '/home-student', builder: (context, state) => const HomeStudentScreen()),

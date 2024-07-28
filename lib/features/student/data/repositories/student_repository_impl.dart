@@ -20,5 +20,10 @@ class StudentRepositoryImpl implements StudentRepository {
   Future<String> vinculeTutor(String userUUID, String code) async {
     return await remoteDataSource.vinculeTutor(userUUID, code);
   }
+  
+  @override
+  Future<String> getScheduleTutor(String tutorUUID) async {
+    return await remoteDataSource.getScheduleTutor(tutorUUID);
+  }
 
 }

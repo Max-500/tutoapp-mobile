@@ -119,7 +119,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 response['user']['student']['userUUID'],
                                 response['user']['student']['haveTutor'],
                                 response['user']['generalDataBool'],
-                                response['user']['typeLearningBool']);
+                                response['user']['typeLearningBool'],
+                                response['token']);
 
                             if (!response['user']['generalDataBool']) {
                               context.go('/general-data');
@@ -136,21 +137,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               return;
                             }
                             
-                            context.push('/home-student');
+                            context.go('/home-student');
                             return;
-                          } else {
+                          }
                             final getCode = ref.read(getCodeProvider);
-                            final code =
-                                await getCode(response['user']['uuid']);
-                            await SharedPreferencesServiceTutor.saveUser(
-                                response['user']['uuid']);
+                            await SharedPreferencesServiceTutor.saveUser(response['user']['uuid'], response['token']);
+                            final code = await getCode(response['user']['uuid']);
                             await SharedPreferencesServiceTutor.saveCode(code);
 
                             context.go('/home-tutor/$code');
-                          }
                         } catch (e) {
-                          _showErrorSnackbar(
-                              e.toString().replaceFirst('Exception: ', ''));
+                          _showErrorSnackbar(e.toString().replaceFirst('Exception: ', ''));
                         }
                       }
                     },

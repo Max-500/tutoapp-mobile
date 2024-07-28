@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tuto_app/presentation/widgets/labeled_container.dart';
-import 'package:tuto_app/presentation/widgets/side_menu.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tuto_app/presentation/providers/student/student_provider.dart';
+import 'package:tuto_app/widgets.dart';
 
-class HomeStudentScreen extends StatelessWidget {
+class HomeStudentScreen extends ConsumerWidget {
   const HomeStudentScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -41,8 +43,16 @@ class HomeStudentScreen extends StatelessWidget {
 
           SizedBox(height: screenHeight * 0.1,),
           
-          LabeledContainer(text: 'Visualizar Horarios', callback: () {
-            
+          LabeledContainer(text: 'Visualizar Horarios', callback: () async {
+            final getScheduleTutor = ref.read(getSheduleTutorProvider);
+            try {
+              final schedule = await getScheduleTutor();
+              final encodedSchedule = Uri.encodeComponent(schedule);
+
+              context.push('/schedule/$encodedSchedule');
+            } catch (e) {
+              showToast(e.toString());
+            }
           }, sizeHeight: screenHeight * 0.1,),
 
           SizedBox(height: screenHeight * 0.05,),

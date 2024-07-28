@@ -8,4 +8,6 @@ class MenuItemsStudent {
   const MenuItemsStudent({required this.title, required this.link, required this.icon});
 }
 
-const menuItemsStudent = <MenuItemsStudent> [];
+const menuItemsStudent = <MenuItemsStudent> [
+    MenuItemsStudent(title: 'Cerrar Sesión', link: '', icon: Icons.login_outlined),
+];

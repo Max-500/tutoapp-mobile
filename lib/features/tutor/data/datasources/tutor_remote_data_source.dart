@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/domain/datasources/tutor_data_source.dart';
 import 'package:path/path.dart';
@@ -12,13 +13,17 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
 
   @override
   Future<String> getCode(String userUUID) async {
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
     final String url = 'https://devsolutions.software/api/v1/tutors/getCode/$userUUID';
     
     final response = await client.get(
       Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwt',
+      },
     );
-
     final responseJson = jsonDecode(response.body);
 
     if(response.statusCode == 200) {
@@ -29,6 +34,8 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
   
   @override
   Future<void> becomePremium(String userUUID, String transactionId) async {
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
     const String url = "https://devsolutions.software/api/v1/payments/";
 
     try {
@@ -36,7 +43,10 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
       String isoDate = now.toIso8601String();
 
       final response = await http.post(Uri.parse(url), 
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $jwt',
+        },
         body: jsonEncode({ 
           "userUUID": userUUID,
           "amount": 70,
@@ -66,12 +76,17 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
 
   @override
   Future<List<TutoredModel>> getTutoreds(String userUUID) async {
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
     try {
       const String url = "https://devsolutions.software/api/v1/tutors/get-tutoreds";
 
       final response = await http.post(
         Uri.parse(url),       
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $jwt',
+        },
         body: json.encode({ 'userUUID': userUUID })
       );
  
@@ -89,9 +104,14 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
   
   @override
   Future cancelOrder(String transactionId) async {
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
     const String url = "https://devsolutions.software/api/v1/payments/cancel-order";
     final response = await http.delete(Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwt',
+      },
       body: jsonEncode({ 'transactionId': transactionId })
     );
 
@@ -104,9 +124,14 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
   
   @override
   Future getOrder() async {
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
     const String url ="https://devsolutions.software/api/v1/payments/create-order";
     final response = await http.post(Uri.parse(url), 
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwt',
+      },
       body: json.encode({ 
         "amount": 7000,
         "currency": "MXN"
@@ -121,9 +146,14 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
   
   @override
   Future<bool> isPremium(String userUUID) async {
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
     const String url = "https://devsolutions.software/api/v1/payments/verify-premium";
     final response = await http.post(Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwt',
+      },
       body: jsonEncode({ 'userUUID': userUUID })
     );
 
@@ -134,6 +164,8 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
   
   @override
   Future<String> updateSchedule(String userUUID, XFile file) async {
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
     try {
       final String url = "https://devsolutions.software/api/v1/tutors/updateScheduleImage/$userUUID";
 
