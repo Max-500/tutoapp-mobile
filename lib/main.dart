@@ -15,6 +15,8 @@ Future<String> getInitialLocation() async {
   final tutorPrefs = await SharedPreferencesServiceTutor.getUser();
   final studentPrefs = await SharedPreferencesServiceStudent.getStudent();
 
+  return '/home-student';
+
   if (tutorPrefs['uuid'] != null && tutorPrefs['uuid'] != 'user_uuid') {
     final code = tutorPrefs['code'];
     return '/home-tutor/$code';

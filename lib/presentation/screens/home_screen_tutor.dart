@@ -23,8 +23,6 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
   late bool isPremium = false;
   bool _isProcessing = false;
 
-  
-
   @override
   void initState() {
     super.initState();

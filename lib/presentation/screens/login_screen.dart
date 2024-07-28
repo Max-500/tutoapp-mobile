@@ -120,18 +120,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 response['user']['student']['haveTutor'],
                                 response['user']['generalDataBool'],
                                 response['user']['typeLearningBool']);
+
                             if (!response['user']['generalDataBool']) {
                               context.go('/general-data');
                               return;
                             }
+
                             if (!response['user']['typeLearningBool']) {
                               context.go('/welcome');
                               return;
                             }
+
                             if (response['user']['student']['haveTutor'] == 'PENDING') {
                               context.go('/link-code');
                               return;
                             }
+                            
                             context.push('/home-student');
                             return;
                           } else {
