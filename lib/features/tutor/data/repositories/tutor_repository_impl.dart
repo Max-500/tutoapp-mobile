@@ -1,6 +1,7 @@
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/features/tutor/data/datasources/tutor_remote_data_source.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
+import 'package:tuto_app/features/tutor/data/models/tutored_permission_model.dart';
 import 'package:tuto_app/features/tutor/domain/repositories/tutor_repository.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -46,4 +47,8 @@ class TutorRepositoryImpl implements TutorRepository{
     return await remoteDataSource.updateSchedule(userUUID, file);
   }
 
+  @override
+  Future<List<TutoredPermissionModel>> getTutoredsPermissions(String userUUID) async {
+    return await remoteDataSource.getTutoredsPermissions(userUUID);
+  }
 }

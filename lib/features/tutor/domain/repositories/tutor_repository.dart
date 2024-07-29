@@ -1,5 +1,6 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
+import 'package:tuto_app/features/tutor/data/models/tutored_permission_model.dart';
 
 abstract class TutorRepository {
   Future<String> getCode(String userUUID);
@@ -9,4 +10,5 @@ abstract class TutorRepository {
   Future<dynamic> cancelOrder(String transactionId);
   Future<bool> isPremium();
   Future<String> updateSchedule(String userUUID, XFile file);
+  Future<List<TutoredPermissionModel>> getTutoredsPermissions(String userUUID);
 }

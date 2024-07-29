@@ -221,7 +221,7 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic tr
             SizedBox(height: screenHeight * 0.05),
             LabeledContainer(
               text: 'Solicitudes de Permisos',
-              callback: () {},
+              callback: () => context.push('/list-tutoreds-permissions'),
             ),
             SizedBox(height: screenHeight * 0.05),
             LabeledContainer(

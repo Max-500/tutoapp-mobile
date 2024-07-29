@@ -65,6 +65,7 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/update-student-data/:image', builder: (context, state) => UpdateProfileStudent(profileImage: state.pathParameters['image']!),),
         GoRoute(path: '/acknowledgment', builder: (context, state) => const Ackowledgment()),
         GoRoute(path: '/welcome', builder: (context, state) => const WelcomeScreen()),
+        GoRoute(path: '/list-tutoreds-permissions', builder: (context, state) => ListPermissions(),),
         GoRoute(path: '/list-tutoreds', builder: (context, state) {
           final tutoreds = state.extra as List<TutoredModel>? ?? [];
           return TutoredsListScreen(tutoreds: tutoreds);

@@ -7,6 +7,7 @@ import 'package:tuto_app/features/tutor/domain/usecases/get_code_tutor.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/get_order_payment.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/get_premium.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/get_tutoreds.dart';
+import 'package:tuto_app/features/tutor/domain/usecases/get_tutoreds_permissions.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/is_premium.dart';
 import 'package:tuto_app/features/tutor/domain/usecases/update_schedule.dart';
 
@@ -62,4 +63,9 @@ final isPremiumProvider = Provider<IsPremium>((ref) {
 final updateScheduleProvider = Provider<UpdateSchedule>((ref) {
   final repository = ref.watch(tutorRepositoryProvider);
   return UpdateSchedule(repository: repository);
+});
+
+final getTutoredsPermissionProvider = Provider<GetTutoredsPermissions>((ref) {
+  final repository = ref.watch(tutorRepositoryProvider);
+  return GetTutoredsPermissions(repository: repository);
 });

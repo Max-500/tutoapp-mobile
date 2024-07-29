@@ -78,8 +78,8 @@ class _ListTuroreds extends StatelessWidget {
   String procesarNombre(String nombreCompleto) {
     final nombres = nombreCompleto.split(' ');
     final primerNombre = nombres[0];
-
-    if (nombreCompleto.length <= 3) return nombreCompleto;
+    
+    if (nombreCompleto.length <= 3 || nombres.length <= 2) return nombreCompleto;
 
     final iniciales = nombres.sublist(1, nombres.length - 2);
     final abreviaciones = iniciales.map((nombre) => nombre[0]).join('. ');
@@ -114,10 +114,11 @@ class _ListTuroreds extends StatelessWidget {
                     child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (listTutoreds[index].profileImage == "PENDING")
-                      Image.asset('images/perfil.png')
-                    else
-                      Image.network(listTutoreds[index].profileImage)
+                    ClipOval(
+                        child: listTutoreds[index].profileImage == "PENDING"
+                          ? Image.asset('images/perfil.png', width: 60, height: 60, fit: BoxFit.cover,)
+                          : Image.network(listTutoreds[index].profileImage, width: 60, height: 60, fit: BoxFit.cover,)
+                      )
                   ],
                 )),
                 Flexible(

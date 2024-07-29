@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
+import 'package:tuto_app/features/tutor/data/models/tutored_permission_model.dart';
 import 'package:tuto_app/features/tutor/domain/datasources/tutor_data_source.dart';
 import 'package:path/path.dart';
 
@@ -193,6 +194,27 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
 
     } catch (e) {
       throw 'Error: ${e.toString()}';
+    }
+  }
+
+  @override
+  Future<List<TutoredPermissionModel>> getTutoredsPermissions(String userUUID) async {
+    final String url = "https://devsolutions.software/api/v1/tutors/get-permissions/$userUUID";
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+
+    try {
+      final response = await http.get(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwt',
+      });
+
+      if(response.statusCode != 200) throw 'Intentalo mas tarde';
+
+      final List<dynamic> responseJson = jsonDecode(response.body);
+
+      return responseJson.map((tutored) => TutoredPermissionModel.fromJson(tutored)).toList();
+    } catch (e) {
+      throw e.toString();
     }
   }
 
