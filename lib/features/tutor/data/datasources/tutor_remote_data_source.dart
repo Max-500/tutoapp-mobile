@@ -171,6 +171,9 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
 
       final request = http.MultipartRequest('PUT', Uri.parse(url));
 
+      request.headers['Authorization'] = 'Bearer $jwt';
+
+
       final stream = http.ByteStream(Stream.castFrom(file.openRead()));
       var length = await file.length();
 

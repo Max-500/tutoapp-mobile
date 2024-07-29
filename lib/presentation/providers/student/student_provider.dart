@@ -7,6 +7,7 @@ import 'package:tuto_app/features/student/domain/usecases/get_schedule_tutor.dar
 import 'package:tuto_app/features/student/domain/usecases/permission.dart';
 import 'package:tuto_app/features/student/domain/usecases/save_data_general.dart';
 import 'package:tuto_app/features/student/domain/usecases/save_type_learning.dart';
+import 'package:tuto_app/features/student/domain/usecases/update_profile_image.dart';
 import 'package:tuto_app/features/student/domain/usecases/vincule_tutor.dart';
 
 final httpClientProvider = Provider<http.Client>((ref) {
@@ -51,4 +52,9 @@ final getProfileImageProvider = Provider<GetProfileImage>((ref) {
 final permissionProvider = Provider<Permission>((ref) {
   final repository = ref.watch(studentRepositoryProvider);
   return Permission(repository: repository);
+});
+
+final updateProfileImageProvider = Provider<UpdateProfileImage>((ref) {
+  final repository = ref.watch(studentRepositoryProvider);
+  return UpdateProfileImage(repository: repository);
 });

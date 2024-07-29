@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/features/student/domain/datasources/student_data_source.dart';
+import 'package:image_picker/image_picker.dart';
 
 class StudentRemoteDataSourceImpl implements StudentDataSource {
   final http.Client client;
@@ -144,6 +146,35 @@ class StudentRemoteDataSourceImpl implements StudentDataSource {
     if(response.statusCode == 200) return 'Permiso solicitado correctamente';
 
     throw responseJson['message'];
+  }
+
+  @override
+  Future<String> updateProfileImage(String userUUID, XFile file) async {
+    final String url = "https://devsolutions.software/api/v1/auth/updateprofileImage/$userUUID";
+    final String jwt = await SharedPreferencesServiceStudent.getToken();
+    try {
+      final request = http.MultipartRequest('PUT', Uri.parse(url));
+      request.headers['Authorization'] = 'Bearer $jwt';
+
+      final stream = http.ByteStream(Stream.castFrom(file.openRead()));
+      var length = await file.length();
+
+      var multipartFile = http.MultipartFile('file', stream, length, filename: basename(file.path));
+      request.files.add(multipartFile);
+
+      final response = await request.send();
+      final responseJson = await http.Response.fromStream(response);
+      final parsedJson = json.decode(responseJson.body);
+      if(response.statusCode == 200) {
+        final String image = parsedJson['s3ObjectUrl'];
+        return image.replaceAll(' ', '%20');
+      }
+
+      final String error = parsedJson['error']['message'];
+      throw error.replaceAll('Tutor', 'User');
+    } catch (e) {
+      throw e.toString();
+    }
   }
 
 }

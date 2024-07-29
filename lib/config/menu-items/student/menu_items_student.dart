@@ -10,5 +10,6 @@ class MenuItemsStudent {
 
 const menuItemsStudent = <MenuItemsStudent> [
     MenuItemsStudent(title: 'Visualizar Horario', link: '/schedule/', icon: Icons.calendar_month_outlined),
+    MenuItemsStudent(title: 'Editar Perfil', link: '/update-student-data/', icon: Icons.edit_outlined),
     MenuItemsStudent(title: 'Cerrar Sesión', link: '', icon: Icons.login_outlined),
 ];

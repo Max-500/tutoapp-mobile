@@ -54,6 +54,16 @@ class MenuItemWidget extends ConsumerWidget {
                 return;
               }
 
+              if(url == '/update-student-data/') {
+                final getProfileImage = ref.read(getProfileImageProvider);
+                final profileImage = await getProfileImage();
+                final uri = Uri.parse(profileImage);
+                String image = uri.pathSegments.last.replaceAll(' ', '%20');
+                context.pop();
+                context.push('/update-student-data/$image');
+                return;
+              }
+
               if(url == '/list-tutoreds') {
                 final tutoreds = await getTutoreds(ref);
 
@@ -66,6 +76,7 @@ class MenuItemWidget extends ConsumerWidget {
                 context.push('/list-tutoreds', extra: tutoreds);
                 return;
               }
+
               context.go(url);
             },
             splashColor: Colors.purple.withOpacity(0.3), // Color del efecto de ripple

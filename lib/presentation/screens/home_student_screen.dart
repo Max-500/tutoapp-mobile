@@ -57,13 +57,20 @@ class _HomeStudentScreenState extends ConsumerState<HomeStudentScreen> {
             padding: const EdgeInsets.only(right: 16),
             child: InkWell(
               borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16.0),
-              topRight: Radius.circular(16.0),
-              bottomLeft: Radius.circular(16.0),
-              bottomRight: Radius.circular(16.0),
+                topLeft: Radius.circular(16.0),
+                topRight: Radius.circular(16.0),
+                bottomLeft: Radius.circular(16.0),
+                bottomRight: Radius.circular(16.0),
               ),
-              onTap: () {
-                print("entrro");
+              onTap: () async {
+                if(image == "Profile image not found") {
+                  image = "profile-image-not-found";
+                }
+                final uri = Uri.parse(image);
+                image = uri.pathSegments.last.replaceAll(' ', '%20');
+
+                await context.push('/update-student-data/$image');
+                await loadImage();
               },
               child: CircleAvatar(
                 radius: 18, // Tamaño de la imagen, más pequeño que el fondo

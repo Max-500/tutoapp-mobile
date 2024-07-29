@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/presentation/providers/auth/user_provider.dart';
+import 'package:tuto_app/presentation/providers/student/student_provider.dart';
 import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
 import 'package:tuto_app/widgets.dart';
 
@@ -135,8 +136,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               context.go('/link-code');
                               return;
                             }
-                            
-                            context.go('/home-student');
+                            final getProfileImage = ref.read(getProfileImageProvider);
+                            final profileImage = await getProfileImage();
+                            final imageUri = Uri.parse(profileImage);
+
+                            context.go('/home-student', extra: imageUri.pathSegments.last);
                             return;
                           }
                             final getCode = ref.read(getCodeProvider);

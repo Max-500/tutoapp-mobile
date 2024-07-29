@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:tuto_app/features/student/data/datasources/student_remote_data_source_impl.dart';
 import 'package:tuto_app/features/student/domain/repositories/student_repository.dart';
 
@@ -34,6 +35,11 @@ class StudentRepositoryImpl implements StudentRepository {
   @override
   Future<String> permission(String userUUID, String tutorUUID) async {
     return await remoteDataSource.permission(userUUID, tutorUUID);
+  }
+
+  @override
+  Future<String> updateProfileImage(String userUUID, XFile file) async {
+    return await remoteDataSource.updateProfileImage(userUUID, file);
   }
 
 }

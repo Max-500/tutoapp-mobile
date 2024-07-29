@@ -1,3 +1,5 @@
+import 'package:image_picker/image_picker.dart';
+
 abstract class StudentRepository {
   Future<void> saveDataGeneral(String userUUID, String matricula, String group, String quarter, String phoneNumer, String homePhone, String nss);
   Future<void> saveTypeLearning(String userUUID, List<String> typeLearning);
@@ -5,4 +7,5 @@ abstract class StudentRepository {
   Future<String> getScheduleTutor(String tutorUUID);
   Future<String> getProfileImage(String userUUID);
   Future<String> permission(String userUUID, String tutorUUID);
+  Future<String> updateProfileImage(String userUUID, XFile file);
 }
