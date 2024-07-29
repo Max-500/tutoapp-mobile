@@ -61,6 +61,7 @@ class MyApp extends StatelessWidget {
         GoRoute(path: '/schedule/:schedule', builder: (context, state) => ScheduleScreen(url: state.pathParameters['schedule']!),),
         GoRoute(path: '/general-data', builder: (context, state) => GeneralDataScreen()),
         GoRoute(path: '/type-learning/:page', builder: (context, state) => TypeLearningScreen(currentPage: int.tryParse(state.pathParameters['page'] ?? '1') ?? 1)),
+        GoRoute(path: '/results-type-learning', builder: (context, state) => const ResultsTypeLearningScreen(),),
         GoRoute(path: '/home-student', builder: (context, state) => const HomeStudentScreen()),
         GoRoute(path: '/update-student-data/:image', builder: (context, state) => UpdateProfileStudent(profileImage: state.pathParameters['image']!),),
         GoRoute(path: '/acknowledgment', builder: (context, state) => const Ackowledgment()),
