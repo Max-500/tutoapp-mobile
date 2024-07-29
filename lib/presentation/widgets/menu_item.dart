@@ -77,7 +77,8 @@ class MenuItemWidget extends ConsumerWidget {
                 return;
               }
 
-              context.go(url);
+              context.pop();
+              context.push(url);
             },
             splashColor: Colors.purple.withOpacity(0.3), // Color del efecto de ripple
             highlightColor: Colors.purple.withOpacity(0.4), // Color del highlight

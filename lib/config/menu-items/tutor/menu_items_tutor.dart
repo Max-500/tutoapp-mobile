@@ -10,5 +10,6 @@ class MenuItemsTutor {
 
 const menuItemsTutor = <MenuItemsTutor> [
   MenuItemsTutor(title: 'Tutorados', link: '/list-tutoreds', icon: Icons.people_outline ),
+  MenuItemsTutor(title: 'Solicitudes de Permisos', link: '/list-tutoreds-permissions', icon: Icons.assessment_outlined),
   MenuItemsTutor(title: 'Cerrar Sesión', link: '', icon: Icons.login_outlined),
 ];
