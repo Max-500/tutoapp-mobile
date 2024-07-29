@@ -5,7 +5,7 @@ import 'package:tuto_app/features/tutor/data/models/tutored_permission_model.dar
 import 'package:tuto_app/features/tutor/domain/repositories/tutor_repository.dart';
 import 'package:image_picker/image_picker.dart';
 
-class TutorRepositoryImpl implements TutorRepository{
+class TutorRepositoryImpl implements TutorRepository {
   final TutorRemoteDataSourceImpl remoteDataSource;
 
   TutorRepositoryImpl({required this.remoteDataSource});
@@ -50,5 +50,10 @@ class TutorRepositoryImpl implements TutorRepository{
   @override
   Future<List<TutoredPermissionModel>> getTutoredsPermissions(String userUUID) async {
     return await remoteDataSource.getTutoredsPermissions(userUUID);
+  }
+  
+  @override
+  Future getPDF(String matricula, String nombre, String grado, String grupo, String phone, String telephone, String nss) async {
+    await remoteDataSource.getPDF(matricula, nombre, grado, grupo, phone, telephone, nss);
   }
 }

@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_permission_model.dart';
 import 'package:tuto_app/features/tutor/domain/datasources/tutor_data_source.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
+import 'package:permission_handler/permission_handler.dart' as permission_handler;
 
 class TutorRemoteDataSourceImpl implements TutorDatasource {
   final http.Client client;
@@ -179,7 +182,7 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
       var length = await file.length();
 
       // Agrega el archivo al formulario
-      var multipartFile = http.MultipartFile('file', stream, length, filename: basename(file.path));
+      var multipartFile = http.MultipartFile('file', stream, length, filename: path.basename(file.path));
       request.files.add(multipartFile);
 
       final response = await request.send();
@@ -213,6 +216,54 @@ class TutorRemoteDataSourceImpl implements TutorDatasource {
       final List<dynamic> responseJson = jsonDecode(response.body);
 
       return responseJson.map((tutored) => TutoredPermissionModel.fromJson(tutored)).toList();
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+  
+  @override
+  Future getPDF(String matricula, String nombre, String grado, String grupo, String phone, String telephone, String nss) async {
+    final status = await permission_handler.Permission.storage.status;
+
+    if (!status.isGranted) {
+      final res = await permission_handler.Permission.manageExternalStorage.request();
+      if(!res.isGranted) {
+        throw 'Error al descargar archivo';
+      }
+   }
+
+    const String url = "https://devsolutions.software/api/v1/students/generate-pdf";
+    final String jwt = await SharedPreferencesServiceTutor.getToken();
+    try {
+      final response = await http.post(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $jwt',
+        },
+        body: jsonEncode({
+          "matricula": matricula,
+          "nombre": nombre,
+          "Grado": grado,
+          "Grupo": grupo,
+          "Numero de telefono personal": phone,
+          "Numero de telefono familiar": telephone,
+          "numero de seguro social": nss
+        })
+      );
+
+      if(response.statusCode != 200) throw 'Intentalo mas tarde';
+
+      final contentType = response.headers['content-type'];
+      if (contentType != null && contentType.contains('application/pdf')) {
+        final directory = await getExternalStorageDirectory();
+        if (directory != null) {
+          final directory = Directory('/storage/emulated/0/Download');
+          final filepath = path.join(directory.path, 'filename_$matricula.pdf');
+          final file = File(filepath);
+          await file.writeAsBytes(response.bodyBytes);
+          return;
+        }
+      }
+      throw 'Error al guardar el archivo PDF';
     } catch (e) {
       throw e.toString();
     }

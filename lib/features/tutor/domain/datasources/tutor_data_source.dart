@@ -11,4 +11,5 @@ abstract class TutorDatasource {
   Future<bool> isPremium(String userUUID);
   Future<String> updateSchedule(String userUUID, XFile file);
   Future<List<TutoredPermissionModel>> getTutoredsPermissions(String userUUID);
+  Future<dynamic> getPDF(String matricula, String nombre, String grado, String grupo, String phone, String telephone, String nss);
 }
