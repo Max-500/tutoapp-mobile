@@ -107,5 +107,43 @@ class StudentRemoteDataSourceImpl implements StudentDataSource {
 
     return responseJson['horario'];
   }
+  
+  @override
+  Future<String> getProfileImage(String userUUID) async {
+    final String url = "https://devsolutions.software/api/v1/auth/getProfileImage/$userUUID";
+    final String jwt = await SharedPreferencesServiceStudent.getToken();
+    final response = await http.get(Uri.parse(url), headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $jwt',
+    });
+    final responseJson = jsonDecode(response.body);
+
+    if(response.statusCode != 200) {
+      return responseJson['error']['message'];
+    }
+    final String image = responseJson['image'];
+    return image.replaceAll(' ', '%20');
+  }
+  
+  @override
+  Future<String> permission(String userUUID, String tutorUUID) async {
+    const String url = "https://devsolutions.software/api/v1/tutors/permissions";
+    final String jwt = await SharedPreferencesServiceStudent.getToken();
+    final response = await http.post(Uri.parse(url), headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $jwt',
+    },
+    body: jsonEncode({ 
+      'userUUID': userUUID,
+      'tutorUUID': tutorUUID
+     })
+    );
+
+    final responseJson = jsonDecode(response.body);
+
+    if(response.statusCode == 200) return 'Permiso solicitado correctamente';
+
+    throw responseJson['message'];
+  }
 
 }

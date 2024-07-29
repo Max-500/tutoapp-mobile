@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ScheduleScreen extends StatelessWidget {
@@ -20,7 +20,7 @@ class ScheduleScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         backgroundColor: const Color.fromRGBO(149, 99, 212, 1),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: AppBarSchedule(screenWidth: screenWidth,),      
+        title: AppBarSchedule(screenWidth: screenWidth),
       ),
       body: Center(
         child: Column(
@@ -33,8 +33,8 @@ class ScheduleScreen extends StatelessWidget {
                 minScale: PhotoViewComputedScale.contained,
                 maxScale: PhotoViewComputedScale.covered * 2.0,
                 initialScale: PhotoViewComputedScale.contained,
-                imageProvider: NetworkImage(schedule,),
-                backgroundDecoration: BoxDecoration(color: Theme.of(context).canvasColor)
+                imageProvider: NetworkImage(schedule),
+                backgroundDecoration: BoxDecoration(color: Theme.of(context).canvasColor),
               ),
             ),
           ],

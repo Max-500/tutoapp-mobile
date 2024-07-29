@@ -11,9 +11,11 @@ import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
 import 'package:tuto_app/widgets.dart';
 
 class HomeScreenTutor extends ConsumerStatefulWidget {
+  final globalKey = GlobalKey<ScaffoldState>();
+
   final String code;
 
-  const HomeScreenTutor({super.key, required this.code});
+  HomeScreenTutor({super.key, required this.code});
 
   @override
   HomeScreenTutorState createState() => HomeScreenTutorState();
@@ -141,7 +143,7 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic tr
           TextButton(
             child: const Text('OK'),
             onPressed: () {
-              Navigator.of(context).pop();
+              context.pop();
             },
           ),
         ],
@@ -171,6 +173,7 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic tr
 
   @override
   Widget build(BuildContext context) {
+    
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
@@ -185,7 +188,8 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic tr
         iconTheme: const IconThemeData(color: Colors.white),
         title: AppBarTutor(screenWidth: screenWidth),
       ),
-      drawer: const SideMenu(isTutor: true),
+      key: widget.globalKey,
+      drawer: SideMenu(isTutor: true, globalKey: widget.globalKey,),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

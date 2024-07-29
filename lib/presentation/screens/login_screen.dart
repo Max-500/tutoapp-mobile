@@ -110,7 +110,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         _formKey.currentState!.save();
                         final email = _emailController.text;
                         final password = _passwordController.text;
-
                         final loginUser = ref.read(loginUserProvider);
                         try {
                           final response = await loginUser(email, password);

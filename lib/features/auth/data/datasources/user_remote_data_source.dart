@@ -41,7 +41,6 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       body: json.encode({'email': email, 'password': password}),
     );
     final responseJson = jsonDecode(response.body);
-    print(responseJson);
     if (response.statusCode == 200) {
       return responseJson;
     } else if (response.statusCode == 401 || response.statusCode == 404){

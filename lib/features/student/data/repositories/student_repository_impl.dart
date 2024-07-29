@@ -25,5 +25,15 @@ class StudentRepositoryImpl implements StudentRepository {
   Future<String> getScheduleTutor(String tutorUUID) async {
     return await remoteDataSource.getScheduleTutor(tutorUUID);
   }
+  
+  @override
+  Future<String> getProfileImage(String userUUID) async {
+    return await remoteDataSource.getProfileImage(userUUID);
+  }
+  
+  @override
+  Future<String> permission(String userUUID, String tutorUUID) async {
+    return await remoteDataSource.permission(userUUID, tutorUUID);
+  }
 
 }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
+import 'package:tuto_app/presentation/providers/student/student_provider.dart';
 import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
 import 'package:tuto_app/presentation/widgets/alerts.dart';
 
@@ -12,8 +13,10 @@ class MenuItemWidget extends ConsumerWidget {
   final IconData icon;
   final String title;
   final String url;
+  final GlobalKey<ScaffoldState> globalKey;
 
-  const MenuItemWidget({ super.key, required this.icon, required this.title, required this.url });
+
+  const MenuItemWidget({ super.key, required this.icon, required this.title, required this.url, required this.globalKey });
 
     Future<List<TutoredModel>> getTutoreds(WidgetRef ref) async {
       try {
@@ -42,13 +45,25 @@ class MenuItemWidget extends ConsumerWidget {
                 return;
               }
 
+              if(url == '/schedule/') {
+                final getScheduleTutor = ref.read(getSheduleTutorProvider);
+                final schedule = await getScheduleTutor();
+                final encodedSchedule = Uri.encodeComponent(schedule);
+                context.pop();
+                context.push('/schedule/$encodedSchedule');
+                return;
+              }
+
               if(url == '/list-tutoreds') {
                 final tutoreds = await getTutoreds(ref);
+
                 if (tutoreds.isEmpty) {
-                  context.go('/list-tutoreds', extra: []);
+                  context.pop();
+                  context.push('/list-tutoreds', extra: []);
                   return;
                 }
-                context.go('/list-tutoreds', extra: tutoreds);
+                context.pop();
+                context.push('/list-tutoreds', extra: tutoreds);
                 return;
               }
               context.go(url);

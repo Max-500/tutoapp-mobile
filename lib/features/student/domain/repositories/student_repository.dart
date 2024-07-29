@@ -3,4 +3,6 @@ abstract class StudentRepository {
   Future<void> saveTypeLearning(String userUUID, List<String> typeLearning);
   Future<String> vinculeTutor(String userUUID, String code);
   Future<String> getScheduleTutor(String tutorUUID);
+  Future<String> getProfileImage(String userUUID);
+  Future<String> permission(String userUUID, String tutorUUID);
 }
