@@ -6,6 +6,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
 import 'package:tuto_app/presentation/providers/tutor/tutor_provider.dart';
 import 'package:tuto_app/widgets.dart';
@@ -25,10 +26,27 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
   late bool isPremium = false;
   bool _isProcessing = false;
 
+  final noScreenShot = NoScreenshot.instance;
+
   @override
   void initState() {
     super.initState();
     isPremumInitializer();
+    noScreenShot.screenshotOff();
+  }
+
+  @override
+  void dispose() {
+    noScreenShot.screenshotOn();
+    super.dispose();
+  }
+
+  Future<void> _enableSecureScreen() async {
+    await noScreenShot.screenshotOff();
+  }
+
+  Future<void> _disableSecureScreen() async {
+    await noScreenShot.screenshotOn();
   }
 
   Future<void> isPremumInitializer() async {
@@ -38,6 +56,7 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
   }
 
   Future<void> becomePremium(BuildContext context) async {
+    _enableSecureScreen();
     if (_isProcessing) return;
 
     setState(() {
@@ -55,6 +74,7 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
       
       await _initializePaymentSheet(paymentIntentData['client_secret']);
       await _presentPaymentSheet(context, paymentIntentData);
+      _disableSecureScreen();
     } catch (e) {
       final cancelOrder = ref.read(cancelOrderPaymentProvider);
       await cancelOrder(paymentIntentData['id']!);
@@ -64,6 +84,7 @@ class HomeScreenTutorState extends ConsumerState<HomeScreenTutor> {
       setState(() {
         _isProcessing = false;
       });
+      _disableSecureScreen(); // Ensure to disable secure screen in the finally block
     }
   }
 

@@ -40,6 +40,7 @@ void main() async {
   await Stripe.instance.applySettings();
 
   runApp(ProviderScope(child: MyApp(initialLocation: initialLocation)));
+
 }
 
 class MyApp extends StatelessWidget {
