@@ -194,7 +194,6 @@ void _handlePaymentIntentStatus(BuildContext context, dynamic status, dynamic tr
 
   @override
   Widget build(BuildContext context) {
-    print(isPremium);
     
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;

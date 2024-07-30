@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuto_app/config/shared_preferences/student/shared_preferences_service_student.dart';
 import 'package:tuto_app/config/shared_preferences/tutor/shared_preferences_services_tutor.dart';
 import 'package:tuto_app/features/tutor/data/models/tutored_model.dart';
@@ -38,6 +39,7 @@ void main() async {
   final initialLocation = await getInitialLocation();
   Stripe.publishableKey = 'pk_test_51PfNmwRpjXAqyBlMs1vE20bKvXKbzhwvPn1jzAtN2HN6hN6SYOc7FcX1Xy1ZMmtzzaSCLD5Xos8YeJ3jdWlaJV2u00t2jqFiJH';
   await Stripe.instance.applySettings();
+  SharedPreferences.setMockInitialValues({}); 
 
   runApp(ProviderScope(child: MyApp(initialLocation: initialLocation)));
 
